@@ -6,7 +6,7 @@ authors:
   - family-names: Xiao
     given-names: Jia
     affiliation: "School of Artificial Intelligence, The Chinese University of Hong Kong, Shenzhen"
-repository-code: "https://github.com/JiaXiao-Peter/causal-state-binding-ai-open"
+repository-code: "https://github.com/JiaXiao-Peter/Causal-State-Binding"
 abstract: "Code, compact source data, analysis scripts, figures, and manuscript sources for an intervention-based causal state-binding evaluation framework for language agents."
 keywords:
   - causal state binding
@@ -17,4 +17,3 @@ keywords:
   - issue-to-file localization
 license: MIT
 date-released: "2026-06-23"
-
