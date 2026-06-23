@@ -1,0 +1,35 @@
+agent:
+  variants: [A0, A1, A2, A3, A4, A5, A4_no_reason, A4_no_veto]
+  max_remote_decisions: 1000000
+  provider:
+    base_url: https://api.shubiaobiao.cn/v1/
+    model: gpt-5.4-mini
+    fallback_model: qwen3-30b-a3b
+    temperature: 0.2
+    fallback_temperature: 0.2
+
+ai_matrix:
+  datasets:
+    - narratives_formal
+    - ds000210_self_loop
+    - ds001618_self_loop
+    - ds001882_choice
+    - ds000212_choice
+    - ds004917_uncertainty
+    - ds004042_recall
+  smoke_datasets: [ds001882_choice, narratives_formal]
+  variants: [A0, A1, A2, A3, A4, A5, A4_no_reason, A4_no_veto]
+  smoke_variants: [A4, A5, A4_no_reason, A4_no_veto]
+  sample_size: 500
+  smoke_sample_size: 10
+  seeds: [1, 2, 3]
+  smoke_seeds: [1]
+  max_workers: 16
+  smoke_max_workers: 4
+  chunk_size: 50
+  smoke_chunk_size: 10
+  hard_call_cap: 84000
+  hard_token_cap: 40000000
+  estimated_tokens_per_call: 300
+  bootstrap_samples: 1000
+  random_seed: 7

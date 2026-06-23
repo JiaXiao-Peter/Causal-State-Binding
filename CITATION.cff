@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the versioned release or DOI."
+title: "Causal State Binding: An Intervention-Based Evaluation Framework for Language Agents"
+type: software
+authors:
+  - family-names: Xiao
+    given-names: Jia
+    affiliation: "School of Artificial Intelligence, The Chinese University of Hong Kong, Shenzhen"
+repository-code: "https://github.com/JiaXiao-Peter/causal-state-binding-ai-open"
+abstract: "Code, compact source data, analysis scripts, figures, and manuscript sources for an intervention-based causal state-binding evaluation framework for language agents."
+keywords:
+  - causal state binding
+  - language agents
+  - agent evaluation
+  - intervention-based evaluation
+  - SWE-bench Lite
+  - issue-to-file localization
+license: MIT
+date-released: "2026-06-23"
+

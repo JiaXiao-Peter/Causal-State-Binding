@@ -1,0 +1,1638 @@
+﻿\pdfminorversion=7
+\pdfsuppresswarningpagegroup=1
+\documentclass[11pt]{article}
+\usepackage[margin=0.85in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[authoryear,round]{natbib}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\ttbreak}[2]{\shortstack[l]{\texttt{#1}\\\texttt{#2}}}
+\newcommand{\ttthree}[3]{\shortstack[l]{\texttt{#1}\\\texttt{#2}\\\texttt{#3}}}
+\newcommand{\plainbreak}[2]{\shortstack[l]{#1\\#2}}
+\newcommand{\plainthree}[3]{\shortstack[l]{#1\\#2\\#3}}
+\newcommand{\AfsRand}{\ttbreak{A5\_schema}{random\_fields}}
+\newcommand{\AfsPosthoc}{\ttbreak{A5\_schema}{posthoc\_fields}}
+\newcommand{\AfsScrambled}{\ttbreak{A5\_schema}{scrambled\_fields}}
+\newcommand{\Aflong}{\ttbreak{A5\_long}{scratchpad}}
+\newcommand{\AfourPosthoc}{\ttbreak{A4\_posthoc}{fields}}
+\newcommand{\AfourScrambled}{\ttbreak{A4\_scrambled}{fields}}
+\newcommand{\AfiveEmpEntropy}{\ttbreak{A5\_empirical}{entropy\_attempt}}
+\setlength{\emergencystretch}{3em}
+\title{\textbf{Causal State Binding: An Intervention-Based Evaluation Framework for Language Agents}}
+\author{Xiao Jia\\School of Artificial Intelligence, The Chinese University of Hong Kong, Shenzhen\\\texttt{xiaojia@link.cuhk.edu.cn}\\ORCID: \url{https://orcid.org/0009-0006-7711-4067}}
+\date{}
+\begin{document}
+\sloppy
+\maketitle
+\section*{Supplementary Overview}
+This Supplementary Information reports the dataset-resolved evidence, metric definitions and reproducibility details for the causal state-binding study. The main text introduces reader-facing names such as causal state binding, structured agent condition, decisive intervention state, trace-action coupling and hidden-target finite-action probes; the alphanumeric labels in this supplement are raw protocol identifiers retained for exact export matching. The tables cover the implemented agent family, prompt/event corpora, finite-action-code behavioral benchmark, open-weight no-context and strict-lesion validation, decisive-field positive controls, local control-binding wrapper checks, local forced-budget entropy/token matching, a SWE-bench Lite issue-to-file localization validation with reliability calibration and threshold analyses, matched-interface action-field coupling controls, baseline lesion matrix, stochastic and entropy-calibration analyses, API evidence, blinded audit and interface diagnostics. Values shown in the PDF tables are rounded for readability; the CSV exports retain the full exported precision. Entropy summaries, resampling intervals and agreement statistics follow standard empirical entropy, bootstrap and nominal-agreement conventions \citep{shannon1948mathematical,efron1993bootstrap,cohen1960coefficient}.
+
+\section*{Extended Data Figures}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure1_baseline_dataset_resolved.display.png}
+\caption{Dataset-resolved baseline trace metrics across variants and replicate indices. Points show replicate-level observations, connecting segments show within-replicate variant structure, and diamonds mark dataset-level means. The display expands the main-text baseline dissociation by showing SCI, RSI, VEI, ACI and action unpredictability across all dataset namespaces. SCI, RSI, VEI and ACI denote self-continuity, reason-sensitivity, veto-effect and action-continuity indices.}
+\label{fig:ed_baseline_dataset_resolved}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure2_schema_dataset_seed_profiles.display.png}
+\caption{Dataset- and replicate-resolved matched-interface AFCI profiles. Points show replicate-level AFCI values, diamonds mark dataset means and horizontal reference bands mark moderate and full action-field coupling regions. AFCI denotes action-field coupling index. The compressed structured-control sensitivity variant is shown as a positive sensitivity variant excluded from the predefined control-comparator set; the predefined controls are the stochastic, post-hoc, scrambled and long-scratchpad matched-interface variants.}
+\label{fig:ed_schema_dataset_seed_profiles}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure3_behavior_condition_by_dataset.display.png}
+\caption{Condition-specific finite-action-code behavior across datasets. Tiles report weighted expected-response rates under the finite experimental action alphabet, while embedded points show replicate condition cells within each dataset. Expected labels are scorer-side annotations and are not visible to the model-visible prompt.}
+\label{fig:ed_behavior_condition_by_dataset}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure4_entropy_diagnostics_full.display.png}
+\caption{Raw, canonical, semantic and action-family entropy diagnostics. Points show retained entropy rows by source and variant, and diamonds mark variant means within entropy layer. The predefined 0.15 closeness criterion was not satisfied in the retained calibration attempts; these panels report calibration distance under the retained attempts.}
+\label{fig:ed_entropy_diagnostics_full}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure5_cross_model_open_weight_audit.display.png}
+\caption{Auxiliary cross-model, open-weight and blinded-audit validation. The cross-model panel reports structured-control greater-than high-stochasticity dataset support while marking weaker structured-control counts separately; the open-weight panel reports paired dataset means for the Qwen2.5-14B-Instruct reference model; and the audit panel reports output-level annotation reliability display under blinding to variant identity. The open-weight validation matrix, formal API validation, strict-lesion slice, calibration and matching criteria and 1,200-item blinded audit are summarized in the main validation figure and Supplementary Table~\ref{tab:s33_validation}.}
+\label{fig:ed_cross_model_open_weight_audit}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure6_conservative_effect_sizes.display.png}
+\caption{Most conservative effect-size summaries across evidence blocks. Blue points report minimum dataset-level contrasts, triangles report leave-one-dataset-out and top-effect-removed summaries, and diamonds report dataset means for the baseline, matched-interface, finite-action-code and open-weight evidence blocks. The display places effect-size support alongside direction counts.}
+\label{fig:ed_conservative_effect_sizes}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure7_proxy_compute_audit.display.png}
+\caption{Proxy length and compute audit. The figure summarizes prompt-length, completion-length, field-count, retry/interface-diagnostic and compressed structured-control sensitivity records used to bound verbosity and compute explanations. Provider-side token metadata were not uniformly retained; the display provides proxy length/structure evidence without complete provider-token accounting or token-matched inference.}
+\label{fig:ed_proxy_compute_audit}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure8_interface_diagnostics.display.png}
+\caption{Error-accounting profile across evidence blocks. Bubble area and labels report error-accounting rows for final-evidence-compatible interface diagnostics, non-final provider-interface attempts and entropy-calibration diagnostics. These counts contextualize data quality and provider-interface limitations separately from the primary effect estimates.}
+\label{fig:ed_interface_diagnostics}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/extended_data/extended_data_figure9_swebench_reliability_calibration.display.png}
+\caption{SWE-bench Lite issue-to-file reliability calibration. Curves bin issue-grouped five-fold predicted probabilities from the full non-CSB baseline and the baseline augmented with causal state binding. Points show decile means over 1,800 model--issue records; point size is proportional to the number of records in the bin. Shaded bands show issue-cluster bootstrap 95\% intervals, and the diagonal is perfect calibration. This display calibrates the full 300-record issue-to-file localization endpoint rather than SWE-bench issue resolution.}
+\label{fig:ed_swebench_reliability_calibration}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/extended_data/extended_data_figure10_swebench_threshold_analysis.display.png}
+\caption{SWE-bench Lite thresholded localization-guard analysis. Issue-grouped five-fold predicted task-only implementation-file hit@3 probabilities were thresholded to accept or reject model--issue localization records. Panels show accepted fraction, accepted task-only hit@3, task-only hard-constraint violation rate and net benefit across thresholds for the full gold-free non-CSB baseline and the same baseline augmented with causal state binding. Shaded bands show issue-cluster bootstrap 95\% intervals. The analysis tests reliability triage behavior for issue-to-file localization; patch generation and test-suite execution are outside this endpoint.}
+\label{fig:ed_swebench_threshold_analysis}
+\end{figure}
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.160\linewidth}L{0.190\linewidth}L{0.260\linewidth}L{0.220\linewidth}L{0.120\linewidth}@{}}
+\caption{Variant protocol-identifier registry. Canonical labels are raw protocol identifiers retained for reproducibility; alias notes identify export names or descriptive names that appear in derived result exports.}\label{tab:s0_variant_registry}\\
+\toprule
+Canonical variant & Used in & Definition & Export aliases or descriptive names & Role \\
+\midrule
+\endfirsthead
+\caption[]{Variant protocol-identifier registry. Canonical labels are raw protocol identifiers retained for reproducibility; alias notes identify export names or descriptive names that appear in derived result exports. (continued)}\\
+\toprule
+Canonical variant & Used in & Definition & Export aliases or descriptive names & Role \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{A4} & baseline, behavior, strong controls & structured variant with branching, self-state, memory, reason graph and veto enabled & none & primary structured variant \\
+\texttt{A5} & baseline, behavior, strong controls & stochastic comparator with branching and high-temperature sampling while self/memory/reason/veto are disabled & none & primary stochastic comparator \\
+\texttt{A4\_no\_reason} & baseline, behavior, robustness & A4 with reason component removed & none & reason-ablation comparator \\
+\texttt{A4\_no\_veto} & baseline, behavior, robustness & A4 with veto component removed & none & veto-ablation comparator \\
+\texttt{A4\_full} & matched-interface AFCI & full structured matched-interface variant & none & positive matched-interface variant \\
+\texttt{A4\_compressed} & matched-interface AFCI & compressed positive sensitivity variant excluded from the predefined control-comparator set & none & \plainbreak{verbosity}{sensitivity} \\
+\texttt{A5\_plain} & matched-interface AFCI & plain stochastic matched-interface comparator & none & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A5\_schema}{random\_fields} & matched-interface AFCI & A5 matched-interface fields generated as random or template fields & random-field schema A5 & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A5\_schema}{posthoc\_fields} & matched-interface AFCI and open-weight reference model & A5 final action generated before post-hoc fields & post-hoc schema A5; \ttbreak{A5\_schema}{posthoc} in open-weight runtime exports & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A5\_schema}{scrambled\_fields} & matched-interface AFCI & A5 fields scrambled from another event/action source & scrambled-field schema A5 & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A4\_posthoc}{fields} & matched-interface AFCI & A4 final action retained while fields are generated after final-action selection & A4 post-hoc fields & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A4\_scrambled}{fields} & matched-interface AFCI & A4 final action retained while fields are paired with wrong event/action information & A4 scrambled fields & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A5\_long}{scratchpad} & matched-interface AFCI & A5 stochastic comparator with extended scratchpad/field budget & long-scratchpad A5 & \plainbreak{predefined}{control comparator} \\
+\ttbreak{A5\_entropy}{attempt} & strong stochastic controls, entropy diagnostics & lower-temperature stochastic attempt & lower-temperature stochastic-attempt export alias & predefined entropy-closeness criterion unsatisfied \\
+\ttbreak{A5\_empirical}{entropy\_attempt} & entropy-calibration diagnostic & selected temperature/top-p candidate from empirical calibration diagnostic & calibration candidate aliases \ttbreak{A5\_attempt\_t02\_p07}{A5\_attempt\_t020\_p075} & predefined entropy-closeness criterion unsatisfied \\
+\ttbreak{A5\_compute}{matched} & strong stochastic controls & compute-control attempt under the implemented protocol; raw identifier does not indicate strict token/compute matching & none & strong stochastic comparator \\
+\ttbreak{A5\_self}{consistency} & strong stochastic controls & self-consistency stochastic control under the implemented protocol & none & strong stochastic comparator \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.180\linewidth}L{0.200\linewidth}L{0.200\linewidth}L{0.200\linewidth}L{0.140\linewidth}@{}}
+\caption{Mechanistic claim components, operational tests and contrary results.}\label{tab:s1_claim_map}\\
+\toprule
+Table role & Claim component & Operational test & Contrary result & Interpretive boundary \\
+\midrule
+\endfirsthead
+\caption[]{Mechanistic claim components, operational tests and contrary results. (continued)}\\
+\toprule
+Table role & Claim component & Operational test & Contrary result & Interpretive boundary \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+mechanism\_map & stochastic contrast & The high-stochasticity comparator increases action unpredictability while disabling self, memory, reason and veto modules. & A strong stochastic control recovers structured-control metrics. & Operational stochastic-substitution test; no claim about consciousness, free will or neural homology. \\
+mechanism\_map & matched-interface action-field coupling & All controls use the same reason/memory/self/veto reporting format and are scored by AFCI. & Post-hoc, scrambled, random-field or verbosity controls match the structured matched-interface AFCI. & Tests reporting-format availability under a shared interface. \\
+mechanism\_map & finite-action-code behavior & Scorer-side records define hidden expected labels and score only canonical final action codes. & The structured-control variant does not pass behavioral criteria or ablations preserve the full structured-control profile. & Fixed action ontology; does not test unconstrained natural-language decision making. \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\clearpage\section*{S1. Implemented Agent Family and Prompt/Event Corpora}
+
+The implemented family is defined by explicit module toggles and sampling settings. The table reports the operational variant definitions used by the lesion tests.
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.160\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}@{}}
+\caption{Implemented agent-family variants and operational roles.}\label{tab:s1_agent_family}\\
+\toprule
+Variant & Branch & Self-state & Memory & Reason graph & Veto & Temperature & Role \\
+\midrule
+\endfirsthead
+\caption[]{Implemented agent-family variants and operational roles. (continued)}\\
+\toprule
+Variant & Branch & Self-state & Memory & Reason graph & Veto & Temperature & Role \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A0 & no & no & no & no & no & 0.1 & minimal non-structured reference \\
+A1 & yes & no & no & no & no & 0.2 & branching-only reference \\
+A2 & yes & yes & no & yes & no & 0.2 & self plus reason without memory/veto \\
+A3 & yes & yes & yes & yes & no & 0.2 & memory-enabled structured variant without veto \\
+A4 & yes & yes & yes & yes & yes & 0.2 & primary structured variant \\
+A4\_no\_reason & yes & yes & yes & no & yes & 0.2 & reason-graph lesion \\
+A4\_no\_veto & yes & yes & yes & yes & no & 0.2 & veto lesion \\
+A5 & yes & no & no & no & no & 0.9 & primary stochastic comparator \\
+\ttbreak{A5\_entropy}{attempt} & yes & no & no & no & no & 0.2 & lower-temperature stochastic attempt \\
+\plainbreak{compute-control}{attempt} & yes & no & no & no & no & 0.9 & compute-control attempt; raw identifier retained in Table~\ref{tab:s0_variant_registry} \\
+\ttbreak{A5\_self}{consistency} & yes & no & no & no & no & 0.9 & multi-sample stochastic control \\
+\ttbreak{A5\_empirical}{entropy\_attempt} & yes & no & no & no & no & 1 & empirical entropy-attempt comparator \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.250\linewidth}L{0.320\linewidth}L{0.350\linewidth}@{}}
+\caption{Dataset namespaces used as prompt/event corpora.}\label{tab:s1_dataset_cards}\\
+\toprule
+Dataset namespace & Prompt-corpus role & Construct pressure \\
+\midrule
+\endfirsthead
+\caption[]{Dataset namespaces used as prompt/event corpora. (continued)}\\
+\toprule
+Dataset namespace & Prompt-corpus role & Construct pressure \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+narratives\_formal & narrative prompt corpus & agency and self-narrative cues \\
+ds000210\_self\_loop & self/prospection prompt corpus & self-continuity \\
+ds001618\_self\_loop & autobiographical/self prompt corpus & self-memory loop \\
+ds001882\_choice & choice prompt corpus & reason/value conflict \\
+ds000212\_choice & choice prompt corpus & reason, veto and agency \\
+ds004917\_uncertainty & uncertainty/risk prompt corpus & stochastic contrast \\
+ds004042\_recall & recall/memory prompt corpus & memory constraint \\
+\end{longtable}
+\normalsize
+
+\clearpage\section*{S2. Baseline Lesion Matrix}
+
+The baseline lesion matrix evaluates whether output dispersion and structured-control traces separate under the implemented structured-control/high-stochasticity lesion design. Raw protocol identifiers are retained in the tables for exact export matching. The criterion summary records the realized call count and dataset-direction outcomes.
+
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.250\linewidth}L{0.320\linewidth}L{0.350\linewidth}@{}}
+\caption{Baseline lesion-matrix criterion summary.}\label{tab:s2_baseline_gate}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endfirsthead
+\caption[]{Baseline lesion-matrix criterion summary. (continued)}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+baseline lesion matrix & status & pass \\
+baseline lesion matrix & profile & full \\
+baseline lesion matrix & calls & 74352 \\
+baseline lesion matrix & remote calls & 74336 \\
+baseline lesion matrix & unrecovered generations & 16 \\
+baseline lesion matrix & unrecovered-generation rate & 0.000215193 \\
+baseline lesion matrix & model & gpt-5.4-mini \\
+baseline lesion matrix & fallback model & qwen3-30b-a3b \\
+baseline lesion matrix & structured-control SCI $>$ high-stochasticity datasets & 5 \\
+baseline lesion matrix & high-stochasticity unpredictability $>$ structured-control datasets & 7 \\
+baseline lesion matrix & reason-lesion drop datasets & 7 \\
+baseline lesion matrix & veto-lesion drop datasets & 7 \\
+\end{longtable}
+\normalsize
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.160\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}L{0.105\linewidth}@{}}
+\caption{Baseline trace metrics summarized by variant.}\label{tab:s2_baseline_variant}\\
+\toprule
+Variant & SCI mean & RSI mean & VEI mean & ACI mean & Unpredictability mean & Distance to structured mean & Rows \\
+\midrule
+\endfirsthead
+\caption[]{Baseline trace metrics summarized by variant. (continued)}\\
+\toprule
+Variant & SCI mean & RSI mean & VEI mean & ACI mean & Unpredictability mean & Distance to structured mean & Rows \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A0 & 0 & 0.14931 & 0 & 9.524e-05 & 8.073 & 1.59321 & 21 \\
+A1 & 0 & 0.18819 & 0 & 0 & 8.00038 & 0.476597 & 21 \\
+A2 & 0.00423593 & 0.788509 & 9.524e-05 & 0 & 7.99426 & 0.320232 & 21 \\
+A3 & 0.0378864 & 0.537366 & 0 & 0.00956706 & 7.15695 & 0.172573 & 21 \\
+A4 & 0.0328108 & 0.544336 & 0.0944023 & 0.014518 & 6.9708 & 0 & 21 \\
+A4\_no\_reason & 0.0596636 & 0.131598 & 0.0868688 & 0.0212342 & 6.62649 & 0.474022 & 21 \\
+A4\_no\_veto & 0.0355957 & 0.533555 & 0 & 0.0137792 & 7.0287 & 0.181687 & 21 \\
+A5 & 0 & 0.219036 & 0 & 0.000190476 & 8.05561 & 0.447575 & 21 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.120\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}@{}}
+\caption{Baseline trace metrics by dataset namespace, variant and replicate index.}\label{tab:s2_baseline_replicate}\\
+\toprule
+Dataset & Replicate index & Variant & SCI & RSI & VEI & ACI & Unpredictability & Distance to structured \\
+\midrule
+\endfirsthead
+\caption[]{Baseline trace metrics by dataset namespace, variant and replicate index. (continued)}\\
+\toprule
+Dataset & Replicate index & Variant & SCI & RSI & VEI & ACI & Unpredictability & Distance to structured \\
+\midrule
+\endhead
+\midrule
+\multicolumn{9}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+ds000210\_self\_loop & 1 & A0 & 0 & 0.328 & 0 & 0 & 8.76825 & 1.35526 \\
+ds000210\_self\_loop & 1 & A1 & 0 & 0.144 & 0 & 0 & 8.89627 & 0.442842 \\
+ds000210\_self\_loop & 1 & A2 & 0.001 & 0.648 & 0 & 0 & 8.94578 & 0.245967 \\
+ds000210\_self\_loop & 1 & A3 & 0.0144 & 0.462 & 0 & 0.0106667 & 8.16901 & 0.162433 \\
+ds000210\_self\_loop & 1 & A4 & 0.007 & 0.47 & 0.162 & 0.006 & 8.03157 & 0 \\
+ds000210\_self\_loop & 1 & A4\_no\_reason & 0.02 & 0.096 & 0.166 & 0.0193333 & 7.77433 & 0.393241 \\
+ds000210\_self\_loop & 1 & A4\_no\_veto & 0.0114 & 0.412 & 0 & 0.00933333 & 8.38953 & 0.212166 \\
+ds000210\_self\_loop & 1 & A5 & 0 & 0.218 & 0 & 0 & 8.93627 & 0.315964 \\
+ds000210\_self\_loop & 2 & A0 & 0 & 0.344 & 0 & 0 & 8.76751 & 1.21486 \\
+ds000210\_self\_loop & 2 & A1 & 0 & 0.14 & 0 & 0 & 8.87448 & 0.346922 \\
+ds000210\_self\_loop & 2 & A2 & 0.001 & 0.66 & 0 & 0 & 8.94178 & 0.356704 \\
+ds000210\_self\_loop & 2 & A3 & 0.014 & 0.466 & 0 & 0.006 & 8.51228 & 0.249926 \\
+ds000210\_self\_loop & 2 & A4 & 0.015 & 0.416 & 0.144 & 0.0106667 & 7.53976 & 0 \\
+ds000210\_self\_loop & 2 & A4\_no\_reason & 0.014 & 0.064 & 0.142 & 0.024 & 7.86176 & 0.367291 \\
+ds000210\_self\_loop & 2 & A4\_no\_veto & 0.01 & 0.47 & 0 & 0.0113333 & 8.16759 & 0.213498 \\
+ds000210\_self\_loop & 2 & A5 & 0 & 0.226 & 0 & 0 & 8.95378 & 0.292231 \\
+ds000210\_self\_loop & 3 & A0 & 0 & 0.36 & 0 & 0 & 8.83731 & 1.32969 \\
+ds000210\_self\_loop & 3 & A1 & 0 & 0.19 & 0 & 0 & 8.88506 & 0.397445 \\
+ds000210\_self\_loop & 3 & A2 & 0.001 & 0.688 & 0 & 0 & 8.91476 & 0.330203 \\
+ds000210\_self\_loop & 3 & A3 & 0.013 & 0.468 & 0 & 0.0113333 & 8.46181 & 0.179912 \\
+ds000210\_self\_loop & 3 & A4 & 0.009 & 0.462 & 0.176 & 0.00466667 & 8.33933 & 0 \\
+ds000210\_self\_loop & 3 & A4\_no\_reason & 0.011 & 0.078 & 0.122 & 0.034 & 7.85439 & 0.408794 \\
+ds000210\_self\_loop & 3 & A4\_no\_veto & 0.016 & 0.508 & 0 & 0.0113333 & 8.52001 & 0.18609 \\
+ds000210\_self\_loop & 3 & A5 & 0 & 0.176 & 0 & 0 & 8.91476 & 0.35543 \\
+ds000212\_choice & 1 & A0 & 0 & 0.296 & 0 & 0 & 8.72665 & 1.15236 \\
+ds000212\_choice & 1 & A1 & 0 & 0.102 & 0 & 0 & 8.7556 & 0.657512 \\
+ds000212\_choice & 1 & A2 & 0 & 0.876 & 0 & 0 & 8.71947 & 0.242358 \\
+ds000212\_choice & 1 & A3 & 0.0054 & 0.434 & 0 & 0.011 & 7.07074 & 0.245605 \\
+ds000212\_choice & 1 & A4 & 0.00252 & 0.656 & 0.028 & 0.0266667 & 7.85523 & 0 \\
+ds000212\_choice & 1 & A4\_no\_reason & 0.00108 & 0.012 & 0.006 & 0.0606667 & 7.55452 & 0.680466 \\
+ds000212\_choice & 1 & A4\_no\_veto & 0.00396 & 0.526 & 0 & 0.0233333 & 7.81526 & 0.146769 \\
+ds000212\_choice & 1 & A5 & 0 & 0.116 & 0 & 0 & 8.77971 & 0.541392 \\
+ds000212\_choice & 2 & A0 & 0 & 0.246 & 0 & 0 & 8.7878 & 1.18602 \\
+ds000212\_choice & 2 & A1 & 0 & 0.086 & 0 & 0 & 8.69956 & 0.724426 \\
+ds000212\_choice & 2 & A2 & 0.00036 & 0.884 & 0 & 0 & 8.76596 & 0.313144 \\
+ds000212\_choice & 2 & A3 & 0.00216 & 0.492 & 0 & 0.018 & 7.55397 & 0.172383 \\
+ds000212\_choice & 2 & A4 & 0.00216 & 0.634 & 0.032 & 0.026 & 7.80838 & 0 \\
+ds000212\_choice & 2 & A4\_no\_reason & 0.0036 & 0.01 & 0.012 & 0.038 & 7.2857 & 0.671147 \\
+ds000212\_choice & 2 & A4\_no\_veto & 0.00252 & 0.498 & 0 & 0.0124 & 7.31826 & 0.166749 \\
+ds000212\_choice & 2 & A5 & 0 & 0.098 & 0 & 0 & 8.79493 & 0.53777 \\
+ds000212\_choice & 3 & A0 & 0 & 0.296 & 0 & 0 & 8.83555 & 1.0744 \\
+ds000212\_choice & 3 & A1 & 0 & 0.09 & 0 & 0 & 8.6902 & 0.591411 \\
+ds000212\_choice & 3 & A2 & 0 & 0.868 & 0 & 0 & 8.75269 & 0.397617 \\
+ds000212\_choice & 3 & A3 & 0.00144 & 0.63 & 0 & 0.0253333 & 7.79394 & 0.119062 \\
+ds000212\_choice & 3 & A4 & 0.00288 & 0.52 & 0.024 & 0.0326667 & 7.53217 & 0 \\
+ds000212\_choice & 3 & A4\_no\_reason & 0.00144 & 0.004 & 0.006 & 0.0653333 & 7.25292 & 0.541525 \\
+ds000212\_choice & 3 & A4\_no\_veto & 0.0036 & 0.618 & 0 & 0.0213333 & 7.65724 & 0.168122 \\
+ds000212\_choice & 3 & A5 & 0 & 0.116 & 0 & 0 & 8.77164 & 0.406437 \\
+ds001618\_self\_loop & 1 & A0 & 0 & 0.112 & 0 & 0 & 8.47286 & 1.35064 \\
+ds001618\_self\_loop & 1 & A1 & 0 & 0.19 & 0 & 0 & 8.61063 & 0.428248 \\
+ds001618\_self\_loop & 1 & A2 & 0 & 0.72 & 0.002 & 0 & 8.77191 & 0.320151 \\
+ds001618\_self\_loop & 1 & A3 & 0 & 0.362 & 0 & 0.005 & 7.81575 & 0.274838 \\
+ds001618\_self\_loop & 1 & A4 & 0 & 0.444 & 0.154 & 0.0173333 & 7.52728 & 0 \\
+ds001618\_self\_loop & 1 & A4\_no\_reason & 0 & 0.064 & 0.204 & 0.0133333 & 6.53898 & 0.383927 \\
+ds001618\_self\_loop & 1 & A4\_no\_veto & 0 & 0.366 & 0 & 0.012 & 7.66101 & 0.317151 \\
+ds001618\_self\_loop & 1 & A5 & 0 & 0.246 & 0 & 0 & 8.67665 & 0.271338 \\
+ds001618\_self\_loop & 2 & A0 & 0 & 0.144 & 0 & 0 & 8.52178 & 1.36285 \\
+ds001618\_self\_loop & 2 & A1 & 0 & 0.2 & 0 & 0 & 8.56596 & 0.487458 \\
+ds001618\_self\_loop & 2 & A2 & 0 & 0.694 & 0 & 0 & 8.77412 & 0.33743 \\
+ds001618\_self\_loop & 2 & A3 & 0 & 0.368 & 0 & 0.0085 & 7.72458 & 0.17737 \\
+ds001618\_self\_loop & 2 & A4 & 0 & 0.444 & 0.14 & 0.00866667 & 7.73685 & 0 \\
+ds001618\_self\_loop & 2 & A4\_no\_reason & 0 & 0.076 & 0.122 & 0.026 & 6.41047 & 0.402855 \\
+ds001618\_self\_loop & 2 & A4\_no\_veto & 0 & 0.368 & 0 & 0.012 & 6.46868 & 0.166994 \\
+ds001618\_self\_loop & 2 & A5 & 0 & 0.248 & 0 & 0 & 8.63753 & 0.298441 \\
+ds001618\_self\_loop & 3 & A0 & 0 & 0.106 & 0 & 0 & 8.43722 & 1.43727 \\
+ds001618\_self\_loop & 3 & A1 & 0 & 0.184 & 0 & 0 & 8.45131 & 0.580472 \\
+ds001618\_self\_loop & 3 & A2 & 0 & 0.596 & 0 & 0 & 8.76532 & 0.413091 \\
+ds001618\_self\_loop & 3 & A3 & 0 & 0.396 & 0 & 0.00333333 & 7.68315 & 0.226955 \\
+ds001618\_self\_loop & 3 & A4 & 0 & 0.306 & 0.208 & 0.004 & 6.70393 & 0 \\
+ds001618\_self\_loop & 3 & A4\_no\_reason & 0 & 0.058 & 0.11 & 0.014 & 6.39787 & 0.334682 \\
+ds001618\_self\_loop & 3 & A4\_no\_veto & 0 & 0.388 & 0 & 0.0106667 & 7.50181 & 0.226884 \\
+ds001618\_self\_loop & 3 & A5 & 0 & 0.282 & 0 & 0 & 8.66935 & 0.263545 \\
+ds001882\_choice & 1 & A0 & 0 & 0.004 & 0 & 0 & 6.52926 & 1.94798 \\
+ds001882\_choice & 1 & A1 & 0 & 0.004 & 0 & 0 & 5.99445 & 0.479681 \\
+ds001882\_choice & 1 & A2 & 0.008 & 0.75 & 0 & 0 & 5.55912 & 0.361726 \\
+ds001882\_choice & 1 & A3 & 0.162 & 0.396 & 0 & 0.008 & 3.81626 & 0.118239 \\
+ds001882\_choice & 1 & A4 & 0.152 & 0.446 & 0.106 & 0.0193333 & 3.72608 & 0 \\
+ds001882\_choice & 1 & A4\_no\_reason & 0.27 & 0 & 0.08 & 0.002 & 2.82488 & 0.462926 \\
+ds001882\_choice & 1 & A4\_no\_veto & 0.12 & 0.424 & 0 & 0.03 & 4.03051 & 0.113551 \\
+ds001882\_choice & 1 & A5 & 0 & 0 & 0 & 0 & 5.9395 & 0.998752 \\
+ds001882\_choice & 2 & A0 & 0 & 0.002 & 0 & 0 & 6.40637 & 1.95812 \\
+ds001882\_choice & 2 & A1 & 0 & 0.002 & 0 & 0 & 5.64805 & 0.476378 \\
+ds001882\_choice & 2 & A2 & 0.007 & 0.768 & 0 & 0 & 5.77716 & 0.363858 \\
+ds001882\_choice & 2 & A3 & 0.141 & 0.468 & 0 & 0.015 & 4.70427 & 0.125849 \\
+ds001882\_choice & 2 & A4 & 0.104 & 0.448 & 0.118 & 0.024 & 4.15845 & 0 \\
+ds001882\_choice & 2 & A4\_no\_reason & 0.312 & 0.002 & 0.114 & 0.006 & 2.74187 & 0.492869 \\
+ds001882\_choice & 2 & A4\_no\_veto & 0.151 & 0.404 & 0 & 0.0233333 & 3.91573 & 0.13466 \\
+ds001882\_choice & 2 & A5 & 0 & 0.004 & 0 & 0 & 6.24003 & 0.696129 \\
+ds001882\_choice & 3 & A0 & 0 & 0 & 0 & 0 & 6.52098 & 1.92553 \\
+ds001882\_choice & 3 & A1 & 0 & 0.006 & 0 & 0 & 5.86191 & 0.406223 \\
+ds001882\_choice & 3 & A2 & 0.02 & 0.756 & 0 & 0 & 5.22555 & 0.402404 \\
+ds001882\_choice & 3 & A3 & 0.145 & 0.45 & 0 & 0.012 & 3.74179 & 0.108793 \\
+ds001882\_choice & 3 & A4 & 0.109 & 0.384 & 0.078 & 0.018 & 2.89757 & 0 \\
+ds001882\_choice & 3 & A4\_no\_reason & 0.294 & 0 & 0.082 & 0.0113333 & 2.74725 & 0.426429 \\
+ds001882\_choice & 3 & A4\_no\_veto & 0.162 & 0.414 & 0 & 0.026 & 3.36946 & 0.0994636 \\
+ds001882\_choice & 3 & A5 & 0 & 0.002 & 0 & 0 & 5.69531 & 0.945267 \\
+ds004042\_recall & 1 & A0 & 0 & 0.03 & 0 & 0 & 8.91725 & 1.92048 \\
+ds004042\_recall & 1 & A1 & 0 & 0.192 & 0 & 0 & 8.93057 & 0.551628 \\
+ds004042\_recall & 1 & A2 & 0.012952 & 0.902 & 0 & 0 & 8.95378 & 0.277931 \\
+ds004042\_recall & 1 & A3 & 0.100937 & 0.65 & 0 & 0 & 8.3718 & 0.14564 \\
+ds004042\_recall & 1 & A4 & 0.103603 & 0.682 & 0.14 & 0.002 & 8.83922 & 0 \\
+ds004042\_recall & 1 & A4\_no\_reason & 0.0956766 & 0.194 & 0.14 & 0.006 & 8.54148 & 0.496309 \\
+ds004042\_recall & 1 & A4\_no\_veto & 0.0962956 & 0.66 & 0 & 0.002 & 8.82551 & 0.16193 \\
+ds004042\_recall & 1 & A5 & 0 & 0.244 & 0 & 0 & 8.94578 & 0.471786 \\
+ds004042\_recall & 2 & A0 & 0 & 0.026 & 0 & 0.002 & 8.90648 & 1.95812 \\
+ds004042\_recall & 2 & A1 & 0 & 0.218 & 0 & 0 & 8.95227 & 0.562195 \\
+ds004042\_recall & 2 & A2 & 0.0092848 & 0.87 & 0 & 0 & 8.95778 & 0.227454 \\
+ds004042\_recall & 2 & A3 & 0.091722 & 0.72 & 0 & 0 & 8.88925 & 0.131892 \\
+ds004042\_recall & 2 & A4 & 0.0748846 & 0.698 & 0.116 & 0.006 & 8.79395 & 0 \\
+ds004042\_recall & 2 & A4\_no\_reason & 0.118549 & 0.232 & 0.17 & 0.00266667 & 8.74416 & 0.477901 \\
+ds004042\_recall & 2 & A4\_no\_veto & 0.0741564 & 0.688 & 0 & 0.006 & 8.71487 & 0.121295 \\
+ds004042\_recall & 2 & A5 & 0 & 0.276 & 0 & 0.002 & 8.91306 & 0.446837 \\
+ds004042\_recall & 3 & A0 & 0 & 0.032 & 0 & 0 & 8.91048 & 1.941 \\
+ds004042\_recall & 3 & A1 & 0 & 0.226 & 0 & 0 & 8.94027 & 0.492784 \\
+ds004042\_recall & 3 & A2 & 0.0276378 & 0.904 & 0 & 0 & 8.94427 & 0.287693 \\
+ds004042\_recall & 3 & A3 & 0.0847924 & 0.724 & 0 & 0.01 & 8.82833 & 0.144852 \\
+ds004042\_recall & 3 & A4 & 0.0965382 & 0.66 & 0.122 & 0 & 8.87975 & 0 \\
+ds004042\_recall & 3 & A4\_no\_reason & 0.0786418 & 0.216 & 0.11 & 0.01 & 8.62266 & 0.458524 \\
+ds004042\_recall & 3 & A4\_no\_veto & 0.0886568 & 0.698 & 0 & 0.006 & 8.83318 & 0.133679 \\
+ds004042\_recall & 3 & A5 & 0 & 0.262 & 0 & 0.002 & 8.92978 & 0.428004 \\
+ds004917\_uncertainty & 1 & A0 & 0 & 0.018 & 0 & 0 & 8.62299 & 2.0015 \\
+ds004917\_uncertainty & 1 & A1 & 0 & 0.338 & 0 & 0 & 8.63624 & 0.400878 \\
+ds004917\_uncertainty & 1 & A2 & 0.00036 & 0.912 & 0 & 0 & 8.43571 & 0.494227 \\
+ds004917\_uncertainty & 1 & A3 & 0.00324 & 0.682 & 0 & 0.013 & 8.09108 & 0.161046 \\
+ds004917\_uncertainty & 1 & A4 & 0.00432 & 0.692 & 0.046 & 0.0113333 & 7.01934 & 0 \\
+ds004917\_uncertainty & 1 & A4\_no\_reason & 0.00288 & 0.076 & 0.048 & 0.0246667 & 7.65113 & 0.616474 \\
+ds004917\_uncertainty & 1 & A4\_no\_veto & 0.00324 & 0.692 & 0 & 0.0088 & 7.91809 & 0.0461257 \\
+ds004917\_uncertainty & 1 & A5 & 0 & 0.382 & 0 & 0 & 8.54235 & 0.455262 \\
+ds004917\_uncertainty & 2 & A0 & 0 & 0.012 & 0 & 0 & 8.51087 & 2.13843 \\
+ds004917\_uncertainty & 2 & A1 & 0 & 0.336 & 0 & 0 & 8.40745 & 0.387633 \\
+ds004917\_uncertainty & 2 & A2 & 0.00036 & 0.912 & 0 & 0 & 8.47606 & 0.382314 \\
+ds004917\_uncertainty & 2 & A3 & 0.00468 & 0.69 & 0 & 0.006 & 7.58568 & 0.0960863 \\
+ds004917\_uncertainty & 2 & A4 & 0.00432 & 0.712 & 0.048 & 0.0126667 & 7.65424 & 0 \\
+ds004917\_uncertainty & 2 & A4\_no\_reason & 0.00324 & 0.086 & 0.024 & 0.0226667 & 7.29729 & 0.667423 \\
+ds004917\_uncertainty & 2 & A4\_no\_veto & 0.00252 & 0.73 & 0 & 0.012 & 7.56667 & 0.117761 \\
+ds004917\_uncertainty & 2 & A5 & 0 & 0.392 & 0 & 0 & 8.65413 & 0.391514 \\
+ds004917\_uncertainty & 3 & A0 & 0 & 0.004 & 0 & 0 & 8.60747 & 2.05311 \\
+ds004917\_uncertainty & 3 & A1 & 0 & 0.304 & 0 & 0 & 8.61613 & 0.414245 \\
+ds004917\_uncertainty & 3 & A2 & 0 & 0.916 & 0 & 0 & 8.47654 & 0.331396 \\
+ds004917\_uncertainty & 3 & A3 & 0.00324 & 0.692 & 0 & 0.0173333 & 7.85269 & 0.0245462 \\
+ds004917\_uncertainty & 3 & A4 & 0.0018 & 0.704 & 0.018 & 0.006 & 7.49391 & 0 \\
+ds004917\_uncertainty & 3 & A4\_no\_reason & 0.00828 & 0.118 & 0.054 & 0.02 & 7.4201 & 0.64978 \\
+ds004917\_uncertainty & 3 & A4\_no\_veto & 0.00216 & 0.708 & 0 & 0.01 & 7.58817 & 0.151182 \\
+ds004917\_uncertainty & 3 & A5 & 0 & 0.424 & 0 & 0 & 8.54861 & 0.447065 \\
+narratives\_formal & 1 & A0 & 0 & 0.265306 & 0 & 0 & 6.49726 & 1.28397 \\
+narratives\_formal & 1 & A1 & 0 & 0.346939 & 0 & 0 & 6.53308 & 0.387361 \\
+narratives\_formal & 1 & A2 & 0 & 0.72449 & 0 & 0 & 6.5943 & 0.221234 \\
+narratives\_formal & 1 & A3 & 0.00742347 & 0.530612 & 0 & 0.0102041 & 6.02814 & 0.220534 \\
+narratives\_formal & 1 & A4 & 0 & 0.530612 & 0.0510204 & 0.0178571 & 6.23594 & 0 \\
+narratives\_formal & 1 & A4\_no\_reason & 0 & 0.418367 & 0.0510204 & 0.0153061 & 5.56579 & 0.33566 \\
+narratives\_formal & 1 & A4\_no\_veto & 0 & 0.632653 & 0 & 0.0244898 & 5.32241 & 0.317218 \\
+narratives\_formal & 1 & A5 & 0 & 0.316327 & 0 & 0 & 6.54578 & 0.247869 \\
+narratives\_formal & 2 & A0 & 0 & 0.214286 & 0 & 0 & 6.46415 & 1.22598 \\
+narratives\_formal & 2 & A1 & 0 & 0.387755 & 0 & 0 & 6.48456 & 0.349778 \\
+narratives\_formal & 2 & A2 & 0 & 0.785714 & 0 & 0 & 6.5943 & 0.260554 \\
+narratives\_formal & 2 & A3 & 0 & 0.581633 & 0 & 0 & 5.92067 & 0.167048 \\
+narratives\_formal & 2 & A4 & 0 & 0.530612 & 0.0306122 & 0.0306122 & 5.91899 & 0 \\
+narratives\_formal & 2 & A4\_no\_reason & 0.00707041 & 0.540816 & 0.0408163 & 0 & 6.05625 & 0.137085 \\
+narratives\_formal & 2 & A4\_no\_veto & 0 & 0.510204 & 0 & 0 & 6.10536 & 0.269589 \\
+narratives\_formal & 2 & A5 & 0 & 0.336735 & 0 & 0 & 6.52537 & 0.218853 \\
+narratives\_formal & 3 & A0 & 0 & 0.295918 & 0 & 0 & 6.48456 & 1.63981 \\
+narratives\_formal & 3 & A1 & 0 & 0.265306 & 0 & 0 & 6.57389 & 0.443026 \\
+narratives\_formal & 3 & A2 & 0 & 0.72449 & 0 & 0 & 6.53308 & 0.157421 \\
+narratives\_formal & 3 & A3 & 0.00117857 & 0.622449 & 0 & 0.0102041 & 5.68077 & 0.371015 \\
+narratives\_formal & 3 & A4 & 0 & 0.591837 & 0.0408163 & 0.0204082 & 5.69492 & 0 \\
+narratives\_formal & 3 & A4\_no\_reason & 0.0114776 & 0.418367 & 0.0204082 & 0.0306122 & 6.01247 & 0.549153 \\
+narratives\_formal & 3 & A4\_no\_veto & 0 & 0.489796 & 0 & 0.0170068 & 5.91339 & 0.344546 \\
+narratives\_formal & 3 & A5 & 0 & 0.234694 & 0 & 0 & 6.55349 & 0.369185 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\clearpage\section*{S3. Matched-Interface Action-Field Coupling Controls}
+
+Matched-interface controls required comparator variants to use the same reporting format and then scored action-field coupling. AFCI is an interface-level analysis that uses reported content, final action and predefined field-source information; the finite-action-code benchmark supplies the reporting-format-independent behavioral test. No metadata-free content-only AFCI sensitivity is included. The compressed structured-control sensitivity variant (\texttt{A4\_compressed}) is reported as a positive sensitivity variant excluded from the seven predefined control comparators: \texttt{A5\_plain}, \texttt{A5\_schema\_random\_fields}, \texttt{A5\_schema\_posthoc\_fields}, \texttt{A5\_schema\_scrambled\_fields}, \texttt{A4\_posthoc\_fields}, \texttt{A4\_scrambled\_fields} and \texttt{A5\_long\_scratchpad}. The self-action AFCI term is sparse in the matched-interface trace scorer. The finite-action-code \(B_{\mathrm{SCI}}\) score is defined separately over final action-code stability under the predefined self-continuity probes.
+
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.250\linewidth}L{0.320\linewidth}L{0.350\linewidth}@{}}
+\caption{Matched-interface control criterion summary.}\label{tab:s3_schema_gate}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endfirsthead
+\caption[]{Matched-interface control criterion summary. (continued)}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+matched-interface controls & status & pass \\
+matched-interface controls & dataset\_count & 7 \\
+matched-interface controls & control\_count & 7 \\
+matched-interface controls & min\_a4\_afci\_gt\_control\_dataset\_count & 7 \\
+matched-interface controls & cluster\_bootstrap\_afci\_delta\_low95 & 0.451911 \\
+matched-interface controls & call\_count & 26946 \\
+matched-interface controls & remote calls & 26946 \\
+matched-interface controls & unrecovered\_count & 0 \\
+matched-interface controls & unrecovered\_rate & 0 \\
+matched-interface controls & planned calls & 26946 \\
+matched-interface controls & model & gpt-5.4-mini \\
+\end{longtable}
+\normalsize
+
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.200\linewidth}L{0.250\linewidth}L{0.250\linewidth}L{0.220\linewidth}@{}}
+\caption{Predefined control-comparator recovery status for matched-interface AFCI.}\label{tab:s3_schema_controls}\\
+\toprule
+Comparator variant & Datasets & Structured AFCI > comparator datasets & Comparator recovered structured datasets \\
+\midrule
+\endfirsthead
+\caption[]{Predefined control-comparator recovery status for matched-interface AFCI. (continued)}\\
+\toprule
+Comparator variant & Datasets & Structured AFCI > comparator datasets & Comparator recovered structured datasets \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A5\_plain & 7 & 7 & 0 \\
+\ttbreak{A5\_schema}{random\_fields} & 7 & 7 & 0 \\
+\ttbreak{A5\_schema}{posthoc\_fields} & 7 & 7 & 0 \\
+\ttbreak{A5\_schema}{scrambled\_fields} & 7 & 7 & 0 \\
+\ttbreak{A4\_posthoc}{fields} & 7 & 7 & 0 \\
+\ttbreak{A4\_scrambled}{fields} & 7 & 7 & 0 \\
+\ttbreak{A5\_long}{scratchpad} & 7 & 7 & 0 \\
+\end{longtable}
+\normalsize
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.120\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}@{}}
+\caption{AFCI component means by matched-interface variant. \texttt{A4\_compressed} is a compressed positive sensitivity variant excluded from the seven predefined control comparators.}\label{tab:s3_schema_variant}\\
+\toprule
+Variant & Reason alignment mean & Memory alignment mean & Veto alignment mean & Self alignment mean & Irrelevant suppression mean & AFCI mean & AFCI + suppression mean & Rows \\
+\midrule
+\endfirsthead
+\caption[]{AFCI component means by matched-interface variant. \texttt{A4\_compressed} is a compressed positive sensitivity variant excluded from the seven predefined control comparators. (continued)}\\
+\toprule
+Variant & Reason alignment mean & Memory alignment mean & Veto alignment mean & Self alignment mean & Irrelevant suppression mean & AFCI mean & AFCI + suppression mean & Rows \\
+\midrule
+\endhead
+\midrule
+\multicolumn{9}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A4\_compressed & 0.491286 & 0.502222 & 1 & 0.00412698 & 1 & 0.499409 & 0.599527 & 21 \\
+A4\_full & 0.494461 & 0.503968 & 1 & 0.00285714 & 1 & 0.500322 & 0.600257 & 21 \\
+\ttbreak{A4\_posthoc}{fields} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\ttbreak{A4\_scrambled}{fields} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\ttbreak{A5\_long}{scratchpad} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+A5\_plain & 0.069306 & 0.225474 & 0.5 & 0 & 0 & 0.198695 & 0.158956 & 21 \\
+\ttbreak{A5\_schema}{posthoc\_fields} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\ttbreak{A5\_schema}{random\_fields} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\ttbreak{A5\_schema}{scrambled\_fields} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.180\linewidth}L{0.200\linewidth}L{0.200\linewidth}L{0.200\linewidth}L{0.140\linewidth}@{}}
+\caption{Dataset-level AFCI contrasts against the structured matched-interface variant (\texttt{A4\_full}).}\label{tab:s3_schema_contrasts}\\
+\toprule
+Dataset & Comparator variant & Comparator AFCI & Structured AFCI & Structured minus comparator \\
+\midrule
+\endfirsthead
+\caption[]{Dataset-level AFCI contrasts against the structured matched-interface variant (\texttt{A4\_full}). (continued)}\\
+\toprule
+Dataset & Comparator variant & Comparator AFCI & Structured AFCI & Structured minus comparator \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+ds000210\_self\_loop & A4\_compressed & 0.488889 & 0.494167 & 0.00527778 \\
+ds000210\_self\_loop & \AfourPosthoc & 0 & 0.494167 & 0.494167 \\
+ds000210\_self\_loop & \AfourScrambled & 0 & 0.494167 & 0.494167 \\
+ds000210\_self\_loop & \Aflong & 0 & 0.494167 & 0.494167 \\
+ds000210\_self\_loop & A5\_plain & 0.178611 & 0.494167 & 0.315556 \\
+ds000210\_self\_loop & \AfsPosthoc & 0 & 0.494167 & 0.494167 \\
+ds000210\_self\_loop & \AfsRand & 0 & 0.494167 & 0.494167 \\
+ds000210\_self\_loop & \AfsScrambled & 0 & 0.494167 & 0.494167 \\
+ds000212\_choice & A4\_compressed & 0.496528 & 0.503472 & 0.00694444 \\
+ds000212\_choice & \AfourPosthoc & 0 & 0.503472 & 0.503472 \\
+ds000212\_choice & \AfourScrambled & 0 & 0.503472 & 0.503472 \\
+ds000212\_choice & \Aflong & 0 & 0.503472 & 0.503472 \\
+ds000212\_choice & A5\_plain & 0.176111 & 0.503472 & 0.327361 \\
+ds000212\_choice & \AfsPosthoc & 0 & 0.503472 & 0.503472 \\
+ds000212\_choice & \AfsRand & 0 & 0.503472 & 0.503472 \\
+ds000212\_choice & \AfsScrambled & 0 & 0.503472 & 0.503472 \\
+ds001618\_self\_loop & A4\_compressed & 0.495694 & 0.491667 & -0.00402778 \\
+ds001618\_self\_loop & \AfourPosthoc & 0 & 0.491667 & 0.491667 \\
+ds001618\_self\_loop & \AfourScrambled & 0 & 0.491667 & 0.491667 \\
+ds001618\_self\_loop & \Aflong & 0 & 0.491667 & 0.491667 \\
+ds001618\_self\_loop & A5\_plain & 0.192708 & 0.491667 & 0.298958 \\
+ds001618\_self\_loop & \AfsPosthoc & 0 & 0.491667 & 0.491667 \\
+ds001618\_self\_loop & \AfsRand & 0 & 0.491667 & 0.491667 \\
+ds001618\_self\_loop & \AfsScrambled & 0 & 0.491667 & 0.491667 \\
+ds001882\_choice & A4\_compressed & 0.514861 & 0.506667 & -0.00819444 \\
+ds001882\_choice & \AfourPosthoc & 0 & 0.506667 & 0.506667 \\
+ds001882\_choice & \AfourScrambled & 0 & 0.506667 & 0.506667 \\
+ds001882\_choice & \Aflong & 0 & 0.506667 & 0.506667 \\
+ds001882\_choice & A5\_plain & 0.191181 & 0.506667 & 0.315486 \\
+ds001882\_choice & \AfsPosthoc & 0 & 0.506667 & 0.506667 \\
+ds001882\_choice & \AfsRand & 0 & 0.506667 & 0.506667 \\
+ds001882\_choice & \AfsScrambled & 0 & 0.506667 & 0.506667 \\
+ds004042\_recall & A4\_compressed & 0.508889 & 0.510417 & 0.00152778 \\
+ds004042\_recall & \AfourPosthoc & 0 & 0.510417 & 0.510417 \\
+ds004042\_recall & \AfourScrambled & 0 & 0.510417 & 0.510417 \\
+ds004042\_recall & \Aflong & 0 & 0.510417 & 0.510417 \\
+ds004042\_recall & A5\_plain & 0.236944 & 0.510417 & 0.273472 \\
+ds004042\_recall & \AfsPosthoc & 0 & 0.510417 & 0.510417 \\
+ds004042\_recall & \AfsRand & 0 & 0.510417 & 0.510417 \\
+ds004042\_recall & \AfsScrambled & 0 & 0.510417 & 0.510417 \\
+ds004917\_uncertainty & A4\_compressed & 0.496528 & 0.501389 & 0.00486111 \\
+ds004917\_uncertainty & \AfourPosthoc & 0 & 0.501389 & 0.501389 \\
+ds004917\_uncertainty & \AfourScrambled & 0 & 0.501389 & 0.501389 \\
+ds004917\_uncertainty & \Aflong & 0 & 0.501389 & 0.501389 \\
+ds004917\_uncertainty & A5\_plain & 0.182847 & 0.501389 & 0.318542 \\
+ds004917\_uncertainty & \AfsPosthoc & 0 & 0.501389 & 0.501389 \\
+ds004917\_uncertainty & \AfsRand & 0 & 0.501389 & 0.501389 \\
+ds004917\_uncertainty & \AfsScrambled & 0 & 0.501389 & 0.501389 \\
+narratives\_formal & A4\_compressed & 0.494473 & 0.494473 & 0 \\
+narratives\_formal & \AfourPosthoc & 0 & 0.494473 & 0.494473 \\
+narratives\_formal & \AfourScrambled & 0 & 0.494473 & 0.494473 \\
+narratives\_formal & \Aflong & 0 & 0.494473 & 0.494473 \\
+narratives\_formal & A5\_plain & 0.232462 & 0.494473 & 0.262011 \\
+narratives\_formal & \AfsPosthoc & 0 & 0.494473 & 0.494473 \\
+narratives\_formal & \AfsRand & 0 & 0.494473 & 0.494473 \\
+narratives\_formal & \AfsScrambled & 0 & 0.494473 & 0.494473 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\clearpage\section*{S4. Finite-Action-Code Behavioral Benchmark}
+
+The finite-action-code benchmark scores canonical final-action behavior under the finite action alphabet. Expected labels are scorer-side rule annotations derived from the condition map; the model-visible prompt specifies the task context, manipulation, module-lesion rule and allowed action ontology but not the hidden expected label used for scoring.
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.180\linewidth}L{0.200\linewidth}L{0.200\linewidth}L{0.200\linewidth}L{0.140\linewidth}@{}}
+\caption{Finite-action-code ontology and scorer-side expected labels.}\label{tab:s4_action_ontology}\\
+\toprule
+Probe condition & Valid action codes & Expected before & Expected after & Interpretation \\
+\midrule
+\endfirsthead
+\caption[]{Finite-action-code ontology and scorer-side expected labels. (continued)}\\
+\toprule
+Probe condition & Valid action codes & Expected before & Expected after & Interpretation \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+baseline & ACTION\_A; ACTION\_B & ACTION\_A & ACTION\_A & No specialized component is required; correct behavior is to keep ACTION\_A. \\
+reason\_flip & ACTION\_A; ACTION\_B & ACTION\_A & ACTION\_B & The decisive reason is moved from A to B; reason-enabled variants should change. \\
+memory\_conflict & ACTION\_A; RECALL\_PRIOR; DEFER & ACTION\_A & RECALL\_PRIOR & A prior commitment conflicts with the immediate action impulse. \\
+veto\_cue & ACTION\_A; VETO; DEFER & ACTION\_A & VETO & A hard stop or constraint cue invalidates the first impulse. \\
+self\_continuity & ACTION\_A; ACTION\_B; DEFER & ACTION\_A & ACTION\_A & A persistent self-state or long-term commitment supports continuity. \\
+irrelevant\_cue & ACTION\_A; ACTION\_B & ACTION\_A & ACTION\_A & An irrelevant cue should not change the action. \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.250\linewidth}L{0.320\linewidth}L{0.350\linewidth}@{}}
+\caption{Finite-action-code behavioral benchmark criterion summary.}\label{tab:s4_behavior_gate}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endfirsthead
+\caption[]{Finite-action-code behavioral benchmark criterion summary. (continued)}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+finite-action-code behavioral benchmark & status & pass \\
+finite-action-code behavioral benchmark & dataset\_count & 7 \\
+finite-action-code behavioral benchmark & scored records & 57816 \\
+finite-action-code behavioral benchmark & source\_scored records & 61056 \\
+finite-action-code behavioral benchmark & planned calls & 58896 \\
+finite-action-code behavioral benchmark & remote calls & 58835 \\
+finite-action-code behavioral benchmark & unrecovered generations & 1 \\
+finite-action-code behavioral benchmark & parse-error rate & 1.700e-05 \\
+finite-action-code behavioral benchmark & unmapped action rate & 0.00129722 \\
+finite-action-code behavioral benchmark & structured-control irrelevant false-positive rate & 0.0083022 \\
+finite-action-code behavioral benchmark & structured-control behavioral composite $>$ high-stochasticity datasets & 7 \\
+finite-action-code behavioral benchmark & structured-control B\_RSI $>$ reason-lesion datasets & 7 \\
+finite-action-code behavioral benchmark & structured-control B\_VEI $>$ veto-lesion datasets & 7 \\
+finite-action-code behavioral benchmark & structured-control B\_MCI $>$ high-stochasticity datasets & 7 \\
+finite-action-code behavioral benchmark & structured-control B\_SCI $>$ high-stochasticity datasets & 7 \\
+finite-action-code behavioral benchmark & dataset-cluster bootstrap lower 95\% bound & 0.855732 \\
+\end{longtable}
+\normalsize
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.080\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}@{}}
+\caption{Behavioral component scores summarized by variant.}\label{tab:s4_behavior_variant}\\
+\toprule
+Variant & RSI \(\mu\) & MCI \(\mu\) & VEI \(\mu\) & SCI \(\mu\) & Cue \(\mu\) & Comp. \(\mu\) & FP \(\mu\) & RSI \(\sigma\) & MCI \(\sigma\) & VEI \(\sigma\) & SCI \(\sigma\) & Cue \(\sigma\) & Comp. \(\sigma\) & FP \(\sigma\) & Sets \\
+\midrule
+\endfirsthead
+\caption[]{Behavioral component scores summarized by variant. (continued)}\\
+\toprule
+Variant & RSI \(\mu\) & MCI \(\mu\) & VEI \(\mu\) & SCI \(\mu\) & Cue \(\mu\) & Comp. \(\mu\) & FP \(\mu\) & RSI \(\sigma\) & MCI \(\sigma\) & VEI \(\sigma\) & SCI \(\sigma\) & Cue \(\sigma\) & Comp. \(\sigma\) & FP \(\sigma\) & Sets \\
+\midrule
+\endhead
+\midrule
+\multicolumn{16}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A4 & 0.973 & 0.773 & 0.989 & 0.990 & 0.931 & 0.931 & 0.008 & 0.023 & 0.151 & 0.019 & 0.021 & 0.037 & 0.037 & 0.019 & 7 \\
+\ttbreak{A4\_no}{reason} & -0.044 & 0.788 & 0.954 & 0.954 & 0.663 & 0.663 & 0.044 & 0.113 & 0.089 & 0.112 & 0.113 & 0.102 & 0.102 & 0.113 & 7 \\
+\ttbreak{A4\_no}{veto} & 0.977 & 0.801 & -0.008 & 0.990 & 0.690 & 0.690 & 0.009 & 0.019 & 0.081 & 0.019 & 0.021 & 0.020 & 0.020 & 0.019 & 7 \\
+A5 & 0.002 & -0.001 & -0.001 & 0.179 & 0.045 & 0.045 & 0.001 & 0.004 & 0.001 & 0.001 & 0.101 & 0.025 & 0.025 & 0.001 & 7 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.120\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}@{}}
+\caption{Behavioral component scores by dataset namespace and variant.}\label{tab:s4_behavior_dataset}\\
+\toprule
+Dataset & Variant & B\_RSI & B\_MCI & B\_VEI & B\_SCI & Cue & Composite & FP \\
+\midrule
+\endfirsthead
+\caption[]{Behavioral component scores by dataset namespace and variant. (continued)}\\
+\toprule
+Dataset & Variant & B\_RSI & B\_MCI & B\_VEI & B\_SCI & Cue & Composite & FP \\
+\midrule
+\endhead
+\midrule
+\multicolumn{9}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+ds000210\_self\_loop & A4 & 0.969444 & 0.808333 & 0.988889 & 0.994444 & 0.940278 & 0.940278 & 0.00277778 \\
+ds000210\_self\_loop & A4\_no\_reason & 0 & 0.813889 & 0.997222 & 0.997222 & 0.702083 & 0.702083 & 0 \\
+ds000210\_self\_loop & A4\_no\_veto & 0.969444 & 0.788889 & -0.00277778 & 0.994444 & 0.6875 & 0.6875 & 0.00277778 \\
+ds000210\_self\_loop & A5 & 0 & 0 & 0 & 0.166667 & 0.0416667 & 0.0416667 & 0 \\
+ds000212\_choice & A4 & 0.977778 & 0.555556 & 0.997222 & 1 & 0.882639 & 0.882639 & 0 \\
+ds000212\_choice & A4\_no\_reason & -0.00277778 & 0.738889 & 0.994444 & 0.997222 & 0.681944 & 0.681944 & 0.00277778 \\
+ds000212\_choice & A4\_no\_veto & 0.988889 & 0.672222 & 0 & 1 & 0.665278 & 0.665278 & 0 \\
+ds000212\_choice & A5 & 0 & 0 & 0 & 0.161111 & 0.0402778 & 0.0402778 & 0 \\
+ds001618\_self\_loop & A4 & 0.983333 & 0.816667 & 0.997222 & 1 & 0.949306 & 0.949306 & 0 \\
+ds001618\_self\_loop & A4\_no\_reason & -0.00277778 & 0.863889 & 0.997222 & 0.988889 & 0.711806 & 0.711806 & 0.00277778 \\
+ds001618\_self\_loop & A4\_no\_veto & 0.983333 & 0.869444 & 0 & 1 & 0.713194 & 0.713194 & 0 \\
+ds001618\_self\_loop & A5 & 0.00277778 & 0 & 0 & 0.391667 & 0.0986111 & 0.0986111 & 0 \\
+ds001882\_choice & A4 & 0.997222 & 0.852778 & 0.994444 & 0.997222 & 0.960417 & 0.960417 & 0.00277778 \\
+ds001882\_choice & A4\_no\_reason & 0 & 0.836111 & 1 & 1 & 0.709028 & 0.709028 & 0 \\
+ds001882\_choice & A4\_no\_veto & 1 & 0.847222 & 0 & 1 & 0.711806 & 0.711806 & 0 \\
+ds001882\_choice & A5 & 0 & 0 & 0 & 0.0916667 & 0.0229167 & 0.0229167 & 0 \\
+ds004042\_recall & A4 & 0.927171 & 0.907563 & 0.946779 & 0.943978 & 0.931373 & 0.931373 & 0.0504202 \\
+ds004042\_recall & A4\_no\_reason & -0.29972 & 0.635854 & 0.70028 & 0.697479 & 0.433473 & 0.433473 & 0.29972 \\
+ds004042\_recall & A4\_no\_veto & 0.938375 & 0.879552 & -0.0504202 & 0.943978 & 0.677871 & 0.677871 & 0.0504202 \\
+ds004042\_recall & A5 & 0 & 0 & 0 & 0.159664 & 0.039916 & 0.039916 & 0 \\
+ds004917\_uncertainty & A4 & 0.991667 & 0.908333 & 1 & 0.997222 & 0.974306 & 0.974306 & 0 \\
+ds004917\_uncertainty & A4\_no\_reason & 0 & 0.891667 & 1 & 1 & 0.722917 & 0.722917 & 0 \\
+ds004917\_uncertainty & A4\_no\_veto & 0.980556 & 0.838889 & 0 & 0.997222 & 0.704167 & 0.704167 & 0 \\
+ds004917\_uncertainty & A5 & 0 & 0 & 0 & 0.0944444 & 0.0236111 & 0.0236111 & 0 \\
+narratives\_formal & A4 & 0.964286 & 0.563492 & 0.996032 & 1 & 0.880952 & 0.880952 & 0 \\
+narratives\_formal & A4\_no\_reason & 0 & 0.738095 & 0.988095 & 1 & 0.681548 & 0.681548 & 0 \\
+narratives\_formal & A4\_no\_veto & 0.97619 & 0.710317 & -0.00396825 & 0.996032 & 0.669643 & 0.669643 & 0.00396825 \\
+narratives\_formal & A5 & 0.0119048 & -0.00396825 & -0.00396825 & 0.190476 & 0.0486111 & 0.0486111 & 0.00396825 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.110\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}L{0.077\linewidth}@{}}
+\caption{Predefined dataset-direction behavioral criterion contrasts.}\label{tab:s4_behavior_contrasts}\\
+\toprule
+Dataset & structured comp. & reason-lesion comp. & veto-lesion comp. & HS comp. & structured-HS comp. & reason contrast & veto contrast & memory contrast & self contrast \\
+\midrule
+\endfirsthead
+\caption[]{Predefined dataset-direction behavioral criterion contrasts. (continued)}\\
+\toprule
+Dataset & structured comp. & reason-lesion comp. & veto-lesion comp. & HS comp. & structured-HS comp. & reason contrast & veto contrast & memory contrast & self contrast \\
+\midrule
+\endhead
+\midrule
+\multicolumn{10}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+ds000210\_self\_loop & 0.940278 & 0.702083 & 0.6875 & 0.0416667 & 0.898611 & 0.969444 & 0.991667 & 0.808333 & 0.827778 \\
+ds000212\_choice & 0.882639 & 0.681944 & 0.665278 & 0.0402778 & 0.842361 & 0.980556 & 0.997222 & 0.555556 & 0.838889 \\
+ds001618\_self\_loop & 0.949306 & 0.711806 & 0.713194 & 0.0986111 & 0.850694 & 0.986111 & 0.997222 & 0.816667 & 0.608333 \\
+ds001882\_choice & 0.960417 & 0.709028 & 0.711806 & 0.0229167 & 0.9375 & 0.997222 & 0.994444 & 0.852778 & 0.905556 \\
+ds004042\_recall & 0.931373 & 0.433473 & 0.677871 & 0.039916 & 0.891457 & 1.22689 & 0.997199 & 0.907563 & 0.784314 \\
+\ttbreak{ds004917}{uncertainty} & 0.974 & 0.723 & 0.704 & 0.024 & 0.951 & 0.992 & 1 & 0.908 & 0.903 \\
+narratives\_formal & 0.880952 & 0.681548 & 0.669643 & 0.0486111 & 0.832341 & 0.964286 & 1 & 0.56746 & 0.809524 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\clearpage\section*{S5. Strong Stochastic Controls and Entropy Diagnostics}
+
+Strong stochastic controls test whether alternative stochastic implementations recover the structured-control profile. Entropy diagnostics summarize action variability under raw strings, rule-canonical actions, semantic clusters and action-family mappings. The calibration tables document that the predefined entropy-closeness criterion was not achieved.
+
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.160\linewidth}L{0.210\linewidth}L{0.210\linewidth}L{0.250\linewidth}L{0.130\linewidth}@{}}
+\caption{Proxy token/compute accounting summary. Provider-side prompt-token, completion-token and total-token usage were not uniformly retained; this table reports availability and proxy measurements for length and structure.}\label{tab:s5_proxy_compute}\\
+\toprule
+Audit item & Measurement or proxy & Availability or value & Evidence source & Interpretation \\
+\midrule
+\endfirsthead
+\caption[]{Proxy token/compute accounting summary. Provider-side prompt-token, completion-token and total-token usage were not uniformly retained; this table reports availability and proxy measurements for length and structure. (continued)}\\
+\toprule
+Audit item & Measurement or proxy & Availability or value & Evidence source & Interpretation \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+provider token usage & prompt\_tokens, completion\_tokens, total\_tokens & not uniformly retained & token\_verbosity\_audit criterion summary reports provider token usage unavailable & provider-token accounting incomplete \\
+prompt length & model-visible prompt character or token count & not uniformly retained & no complete prompt-length column in retained token audit summary & prompt-token matching unavailable \\
+completion length proxy & json\_trace\_chars, final\_action\_chars, first\_impulse\_chars & 84,516 trace rows; 552 source/dataset/variant summaries & retained token-verbosity audit table & field-length/verbosity proxy only \\
+trace structure proxy & reason\_node\_count, branch\_count, memory\_item\_count & 84,516 trace rows; 552 summaries & retained token-verbosity audit table & structure proxy for compute-risk assessment \\
+schema field count & matched-interface emitted JSON schema & nine external fields in matched-interface protocol & matched-interface protocol schema & controls schema availability under the matched interface \\
+retry count & provider retry attempts & not uniformly retained & unrecovered generations are reported separately by experiment & retry-cost inference unavailable \\
+latency proxy & latency\_ms & available where retained in token\_verbosity\_audit & wall-clock proxy affected by provider and network conditions & indirect model-compute/cost proxy \\
+compressed structured-control sensitivity & AFCI\_mean & A4\_full=0.500; A4\_compressed=0.499 & matched-interface AFCI table & coupling persisted under compressed trace expression \\
+\Aflong\ control & AFCI\_mean & \ttbreak{A5\_long}{scratchpad=0.000} & matched-interface AFCI table & compute matching not established \\
+\end{longtable}
+\normalsize
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.095\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}L{0.058\linewidth}@{}}
+\caption{Robustness and stochastic-control criterion summary. Prompt-paraphrase, expanded counterfactual and placebo rows are auxiliary robustness blocks. They are distinct from the formal counterfactual-transform quality-control screen and the consistency-passing transform reported in Supplementary Table~\ref{tab:s33_validation}.}\label{tab:s5_robust_gate}\\
+\toprule
+Experiment & Status & Calls & Remote & Unrec. & Unrec. rate & Min ds & HS rec. & AFCI ds & Parse n & Parse r & Kappa & Leak \\
+\midrule
+\endfirsthead
+\caption[]{Robustness and stochastic-control criterion summary. Auxiliary robustness rows are distinct from the formal counterfactual-transform quality-control screen and consistency-passing transform. (continued)}\\
+\toprule
+Experiment & Status & Calls & Remote & Unrec. & Unrec. rate & Min ds & HS rec. & AFCI ds & Parse n & Parse r & Kappa & Leak \\
+\midrule
+\endhead
+\midrule
+\multicolumn{13}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+strong stochastic controls & pass & 15490 & 15490 & 0 & 0 & 7 & 0 & -- & -- & -- & -- & -- \\
+\ttbreak{A5\_empirical}{entropy\_attempt} & predefined closeness not satisfied & 17082 & 17082 & 0 & 0 & 7 & 0 & -- & -- & -- & -- & -- \\
+prompt paraphrases & pass & 11400 & 11400 & 0 & 0 & 17 & 0 & -- & -- & -- & -- & -- \\
+expanded counterfactual probes & auxiliary pass & 30584 & 30584 & 0 & 0 & 61 & 0 & -- & -- & -- & -- & -- \\
+placebo components & pass & 9960 & 9960 & 0 & 0 & 24 & 0 & -- & -- & -- & -- & -- \\
+cross-model subset & pass & -- & -- & -- & -- & -- & -- & -- & -- & -- & -- & -- \\
+open-weight reference model & pass & -- & -- & -- & -- & -- & -- & 7 & 8 & 0.000762 & -- & -- \\
+expanded blinded audit & pass & -- & -- & -- & -- & -- & -- & -- & -- & -- & 0.961 & 0 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.105\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}@{}}
+\caption{Entropy diagnostics summarized by experiment source and variant.}\label{tab:s5_entropy_source}\\
+\toprule
+Source & Variant & \plainbreak{Raw H}{mean} & \plainbreak{Rule H}{mean} & \plainbreak{Semantic H}{mean} & \plainbreak{Family H}{mean} & \plainbreak{Raw H}{SD} & \plainbreak{Rule H}{SD} & \plainbreak{Semantic H}{SD} & \plainbreak{Family H}{SD} & \plainbreak{Aggregate}{rows} \\
+\midrule
+\endfirsthead
+\caption[]{Entropy diagnostics summarized by experiment source and variant. (continued)}\\
+\toprule
+Source & Variant & \plainbreak{Raw H}{mean} & \plainbreak{Rule H}{mean} & \plainbreak{Semantic H}{mean} & \plainbreak{Family H}{mean} & \plainbreak{Raw H}{SD} & \plainbreak{Rule H}{SD} & \plainbreak{Semantic H}{SD} & \plainbreak{Family H}{SD} & \plainbreak{Aggregate}{rows} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{11}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+counterfactual probes & A4 & 4.180 & 2.647 & 3.962 & 0.863 & 1.703 & 1.490 & 1.625 & 0.461 & 70 \\
+counterfactual probes & \ttbreak{A4\_no}{reason} & 4.013 & 2.549 & 3.851 & 0.883 & 1.753 & 1.543 & 1.683 & 0.512 & 70 \\
+counterfactual probes & \ttbreak{A4\_no}{veto} & 4.179 & 2.591 & 3.969 & 0.913 & 1.734 & 1.508 & 1.709 & 0.490 & 70 \\
+counterfactual probes & A5 & 5.519 & 3.362 & 5.445 & 1.086 & 1.410 & 1.738 & 1.432 & 0.452 & 70 \\
+\ttbreak{A5\_emp.}{entropy} & A4 & 6.596 & 5.106 & 6.360 & 1.070 & 1.292 & 1.541 & 1.301 & 0.411 & 21 \\
+\ttbreak{A5\_emp.}{entropy} & A5 & 7.569 & 5.600 & 7.514 & 1.241 & 0.956 & 1.390 & 0.979 & 0.131 & 21 \\
+\ttbreak{A5\_emp.}{entropy} & \ttbreak{A5\_emp.}{entropy} & 7.584 & 5.477 & 7.529 & 1.236 & 0.924 & 1.432 & 0.951 & 0.134 & 21 \\
+placebo\_components & A4 & 4.445 & 3.443 & 4.312 & 0.822 & 1.594 & 1.628 & 1.546 & 0.393 & 33 \\
+placebo\_components & \ttbreak{A4\_no}{reason} & 4.156 & 3.232 & 4.027 & 0.879 & 1.622 & 1.472 & 1.596 & 0.500 & 33 \\
+placebo\_components & \ttbreak{A4\_no}{veto} & 4.698 & 3.546 & 4.551 & 0.865 & 1.508 & 1.678 & 1.460 & 0.432 & 33 \\
+placebo\_components & A5 & 5.364 & 4.048 & 5.330 & 1.091 & 1.442 & 1.677 & 1.450 & 0.378 & 33 \\
+prompt\_paraphrases & A4 & 5.232 & 3.848 & 5.000 & 1.159 & 1.409 & 1.501 & 1.341 & 0.466 & 21 \\
+prompt\_paraphrases & \ttbreak{A4\_no}{reason} & 4.895 & 3.419 & 4.720 & 1.103 & 1.503 & 1.495 & 1.458 & 0.514 & 21 \\
+prompt\_paraphrases & \ttbreak{A4\_no}{veto} & 5.464 & 4.010 & 5.267 & 1.002 & 1.356 & 1.515 & 1.326 & 0.410 & 21 \\
+prompt\_paraphrases & A5 & 6.302 & 4.653 & 6.183 & 1.204 & 0.995 & 1.340 & 1.000 & 0.251 & 21 \\
+\plainbreak{strong stochastic}{controls} & A4 & 7.009 & 5.462 & 6.777 & 1.090 & 1.849 & 1.757 & 1.815 & 0.415 & 7 \\
+\plainbreak{strong stochastic}{controls} & A5 & 7.998 & 5.914 & 7.943 & 1.204 & 1.377 & 1.545 & 1.401 & 0.228 & 7 \\
+\plainbreak{strong stochastic}{controls} & \plainbreak{compute}{control} & 7.994 & 5.915 & 7.936 & 1.238 & 1.422 & 1.569 & 1.452 & 0.151 & 7 \\
+\plainbreak{strong stochastic}{controls} & \ttbreak{A5\_entropy}{attempt} & 7.941 & 5.896 & 7.896 & 1.161 & 1.465 & 1.754 & 1.463 & 0.211 & 7 \\
+\plainbreak{strong stochastic}{controls} & \ttbreak{A5\_self}{consistency} & 7.994 & 5.926 & 7.928 & 1.173 & 1.382 & 1.640 & 1.414 & 0.176 & 7 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.250\linewidth}L{0.320\linewidth}L{0.350\linewidth}@{}}
+\caption{Predefined empirical entropy-attempt calibration criterion summary.}\label{tab:s5_strict_gate}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endfirsthead
+\caption[]{Predefined empirical entropy-attempt calibration criterion summary. (continued)}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+strict\_a5\_em\_calibration & calibration\_events\_per\_dataset & 50 \\
+strict\_a5\_em\_calibration & closeness\_threshold & 0.15 \\
+strict\_a5\_em\_calibration & grid\_coverage\_status & complete \\
+strict\_a5\_em\_calibration & max\_selected\_strict\_entropy\_gap & 1.17146 \\
+strict\_a5\_em\_calibration & note & raw/canonical/semantic/action-family closeness did not meet threshold \\
+strict\_a5\_em\_calibration & observed\_required\_setting\_count & 28 \\
+strict\_a5\_em\_calibration & required\_setting\_count & 28 \\
+strict\_a5\_em\_calibration & selected\_temperature & 0.2 \\
+strict\_a5\_em\_calibration & selected\_top\_p & 0.75 \\
+strict\_a5\_em\_calibration & selected\_variant & A5\_attempt\_t020\_p075 \\
+strict\_a5\_em\_calibration & status & predefined closeness not satisfied \\
+strict\_a5\_em\_calibration & strict\_entropy\_close\_enough & False \\
+strict\_a5\_em\_calibration & wording\_rule & Entropy matching is reported only when the predefined closeness criterion is satisfied; here the empirical attempt did not satisfy that criterion. \\
+\end{longtable}
+\normalsize
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.120\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}L{0.085\linewidth}@{}}
+\caption{Predefined empirical entropy-attempt calibration grid.}\label{tab:s5_strict_grid}\\
+\toprule
+Variant & Temp. & Top \(p\) & \plainbreak{Raw H}{gap} & \plainbreak{Rule H}{gap} & \plainbreak{Semantic H}{gap} & \plainbreak{Family H}{gap} & \plainbreak{Strict}{score} & \plainbreak{Max strict}{gap} \\
+\midrule
+\endfirsthead
+\caption[]{Predefined empirical entropy-attempt calibration grid. (continued)}\\
+\toprule
+Variant & Temp. & Top \(p\) & \plainbreak{Raw H}{gap} & \plainbreak{Rule H}{gap} & \plainbreak{Semantic H}{gap} & \plainbreak{Family H}{gap} & \plainbreak{Strict}{score} & \plainbreak{Max strict}{gap} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{9}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\ttbreak{A5\_attempt}{t020\_p060} & 0.2 & 0.6 & 0.944 & 1.300 & 1.096 & 0.302 & 0.910 & 1.300 \\
+\ttbreak{A5\_attempt}{t020\_p075} & 0.2 & 0.75 & 0.973 & 1.171 & 1.110 & 0.353 & 0.902 & 1.171 \\
+\ttbreak{A5\_attempt}{t020\_p090} & 0.2 & 0.9 & 1.102 & 1.420 & 1.224 & 0.404 & 1.037 & 1.420 \\
+\ttbreak{A5\_attempt}{t020\_p100} & 0.2 & 1 & 0.955 & 1.331 & 1.094 & 0.365 & 0.936 & 1.331 \\
+\ttbreak{A5\_attempt}{t040\_p060} & 0.4 & 0.6 & 1.125 & 1.545 & 1.271 & 0.388 & 1.082 & 1.545 \\
+\ttbreak{A5\_attempt}{t040\_p075} & 0.4 & 0.75 & 1.154 & 1.462 & 1.295 & 0.249 & 1.040 & 1.462 \\
+\ttbreak{A5\_attempt}{t040\_p090} & 0.4 & 0.9 & 1.070 & 1.328 & 1.217 & 0.362 & 0.994 & 1.328 \\
+\ttbreak{A5\_attempt}{t040\_p100} & 0.4 & 1 & 1.186 & 1.334 & 1.314 & 0.317 & 1.038 & 1.334 \\
+\ttbreak{A5\_attempt}{t060\_p060} & 0.6 & 0.6 & 1.129 & 1.518 & 1.264 & 0.296 & 1.052 & 1.518 \\
+\ttbreak{A5\_attempt}{t060\_p075} & 0.6 & 0.75 & 1.123 & 1.373 & 1.260 & 0.403 & 1.040 & 1.373 \\
+\ttbreak{A5\_attempt}{t060\_p090} & 0.6 & 0.9 & 1.114 & 1.492 & 1.253 & 0.504 & 1.091 & 1.492 \\
+\ttbreak{A5\_attempt}{t060\_p100} & 0.6 & 1 & 1.155 & 1.520 & 1.273 & 0.303 & 1.063 & 1.520 \\
+\ttbreak{A5\_attempt}{t080\_p060} & 0.8 & 0.6 & 1.167 & 1.539 & 1.295 & 0.371 & 1.093 & 1.539 \\
+\ttbreak{A5\_attempt}{t080\_p075} & 0.8 & 0.75 & 1.043 & 1.344 & 1.178 & 0.322 & 0.972 & 1.344 \\
+\ttbreak{A5\_attempt}{t080\_p090} & 0.8 & 0.9 & 1.068 & 1.414 & 1.207 & 0.324 & 1.003 & 1.414 \\
+\ttbreak{A5\_attempt}{t080\_p100} & 0.8 & 1 & 1.058 & 1.704 & 1.205 & 0.307 & 1.069 & 1.704 \\
+\ttbreak{A5\_attempt}{t100\_p060} & 1 & 0.6 & 0.904 & 1.305 & 1.026 & 0.418 & 0.913 & 1.305 \\
+\ttbreak{A5\_attempt}{t100\_p075} & 1 & 0.75 & 0.973 & 1.476 & 1.106 & 0.469 & 1.006 & 1.476 \\
+\ttbreak{A5\_attempt}{t100\_p090} & 1 & 0.9 & 0.960 & 1.403 & 1.099 & 0.404 & 0.966 & 1.403 \\
+\ttbreak{A5\_attempt}{t100\_p100} & 1 & 1 & 1.017 & 1.438 & 1.164 & 0.394 & 1.003 & 1.438 \\
+\ttbreak{A5\_attempt}{t120\_p060} & 1.2 & 0.6 & 1.045 & 1.579 & 1.184 & 0.435 & 1.061 & 1.579 \\
+\ttbreak{A5\_attempt}{t120\_p075} & 1.2 & 0.75 & 1.043 & 1.136 & 1.188 & 0.577 & 0.986 & 1.188 \\
+\ttbreak{A5\_attempt}{t120\_p090} & 1.2 & 0.9 & 0.984 & 1.389 & 1.128 & 0.395 & 0.974 & 1.389 \\
+\ttbreak{A5\_attempt}{t120\_p100} & 1.2 & 1 & 1.029 & 1.298 & 1.170 & 0.469 & 0.991 & 1.298 \\
+\ttbreak{A5\_attempt}{t140\_p060} & 1.4 & 0.6 & 1.041 & 1.357 & 1.179 & 0.525 & 1.025 & 1.357 \\
+\ttbreak{A5\_attempt}{t140\_p075} & 1.4 & 0.75 & 1.028 & 1.419 & 1.157 & 0.397 & 1.000 & 1.419 \\
+\ttbreak{A5\_attempt}{t140\_p090} & 1.4 & 0.9 & 1.051 & 1.357 & 1.198 & 0.437 & 1.011 & 1.357 \\
+\ttbreak{A5\_attempt}{t140\_p100} & 1.4 & 1 & 0.966 & 1.424 & 1.119 & 0.439 & 0.987 & 1.424 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.250\linewidth}L{0.320\linewidth}L{0.350\linewidth}@{}}
+\caption{Finite-action-code entropy-calibration criterion summary.}\label{tab:s5_calib_gate}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endfirsthead
+\caption[]{Finite-action-code entropy-calibration criterion summary. (continued)}\\
+\toprule
+Criterion & Field & Value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+finite-action entropy calibration & structured-control behavioral composite $>$ selected high-stochasticity datasets & 7 \\
+finite-action entropy calibration & behavior pass threshold & 6 \\
+finite-action entropy calibration & calibration events per dataset & 14 \\
+finite-action entropy calibration & calibration maximum predefined entropy gap & 1.22474 \\
+finite-action entropy calibration & calibration mean predefined entropy gap & 1.13035 \\
+finite-action entropy calibration & calls & 11088 \\
+finite-action entropy calibration & closeness threshold & 0.15 \\
+finite-action entropy calibration & dataset count & 7 \\
+finite-action entropy calibration & dry run & False \\
+finite-action entropy calibration & experiment & finite-action entropy calibration \\
+finite-action entropy calibration & unrecovered-generation rate & 0 \\
+finite-action entropy calibration & grid setting count & 14 \\
+finite-action entropy calibration & maximum model-generation budget & 12000 \\
+finite-action entropy calibration & holdout events per dataset & 18 \\
+finite-action entropy calibration & holdout maximum predefined entropy gap & 1.34765 \\
+finite-action entropy calibration & holdout mean predefined entropy gap & 1.14711 \\
+finite-action entropy calibration & holdout predefined entropy close enough & False \\
+finite-action entropy calibration & holdout\_unmapped action rate & 0 \\
+finite-action entropy calibration & planned calibration calls & 8820 \\
+finite-action entropy calibration & planned calls & 11088 \\
+finite-action entropy calibration & planned holdout calls & 2268 \\
+finite-action entropy calibration & remote calls & 11088 \\
+finite-action entropy calibration & selected high-stochasticity candidate did not recover structured-control behavior & True \\
+finite-action entropy calibration & selected behavior bootstrap lower 95\% bound & 0.863095 \\
+finite-action entropy calibration & selected temperature & 0.2 \\
+finite-action entropy calibration & selected top-p & 0.7 \\
+finite-action entropy calibration & selected variant & A5\_attempt\_t02\_p07 \\
+finite-action entropy calibration & status & predefined closeness not satisfied \\
+finite-action entropy calibration & unrecovered generations & 0 \\
+finite-action entropy calibration & wording rule & Entropy calibration is reported as matched only when holdout closeness and behavioral criteria are satisfied; here the retained attempt did not satisfy the required criteria. \\
+\end{longtable}
+\normalsize
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.105\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}@{}}
+\caption{Finite-action-code entropy-calibration grid.}\label{tab:s5_calib_grid}\\
+\toprule
+Variant & Sets & Rows & Mean gap & Max gap & Unmap & Raw H & Code H & Family H & Temp. & Top \(p\) \\
+\midrule
+\endfirsthead
+\caption[]{Finite-action-code entropy-calibration grid. (continued)}\\
+\toprule
+Variant & Sets & Rows & Mean gap & Max gap & Unmap & Raw H & Code H & Family H & Temp. & Top \(p\) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{11}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\ttbreak{A5\_attempt}{t01\_p07} & 7 & 588 & 1.138 & 1.189 & 0 & 1.138 & 1.138 & 1.138 & 0.1 & 0.7 \\
+\ttbreak{A5\_attempt}{t01\_p10} & 7 & 588 & 1.171 & 1.249 & 0.002 & 1.171 & 1.171 & 1.171 & 0.1 & 1 \\
+\ttbreak{A5\_attempt}{t02\_p07} & 7 & 588 & 1.130 & 1.225 & 0.002 & 1.130 & 1.130 & 1.130 & 0.2 & 0.7 \\
+\ttbreak{A5\_attempt}{t02\_p10} & 7 & 588 & 1.142 & 1.250 & 0 & 1.142 & 1.142 & 1.142 & 0.2 & 1 \\
+\ttbreak{A5\_attempt}{t04\_p07} & 7 & 588 & 1.139 & 1.189 & 0 & 1.139 & 1.139 & 1.139 & 0.4 & 0.7 \\
+\ttbreak{A5\_attempt}{t04\_p10} & 7 & 588 & 1.164 & 1.219 & 0 & 1.164 & 1.164 & 1.164 & 0.4 & 1 \\
+\ttbreak{A5\_attempt}{t06\_p07} & 7 & 588 & 1.162 & 1.250 & 0.002 & 1.162 & 1.162 & 1.162 & 0.6 & 0.7 \\
+\ttbreak{A5\_attempt}{t06\_p10} & 7 & 588 & 1.161 & 1.223 & 0 & 1.161 & 1.161 & 1.161 & 0.6 & 1 \\
+\ttbreak{A5\_attempt}{t08\_p07} & 7 & 588 & 1.157 & 1.225 & 0.002 & 1.157 & 1.157 & 1.157 & 0.8 & 0.7 \\
+\ttbreak{A5\_attempt}{t08\_p10} & 7 & 588 & 1.156 & 1.223 & 0 & 1.156 & 1.156 & 1.156 & 0.8 & 1 \\
+\ttbreak{A5\_attempt}{t10\_p07} & 7 & 588 & 1.153 & 1.223 & 0 & 1.153 & 1.153 & 1.153 & 1 & 0.7 \\
+\ttbreak{A5\_attempt}{t10\_p10} & 7 & 588 & 1.153 & 1.284 & 0.003 & 1.153 & 1.153 & 1.153 & 1 & 1 \\
+\ttbreak{A5\_attempt}{t12\_p07} & 7 & 588 & 1.152 & 1.223 & 0 & 1.152 & 1.152 & 1.152 & 1.2 & 0.7 \\
+\ttbreak{A5\_attempt}{t12\_p10} & 7 & 588 & 1.142 & 1.219 & 0.002 & 1.142 & 1.142 & 1.142 & 1.2 & 1 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.105\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}L{0.070\linewidth}@{}}
+\caption{Finite-action-code entropy-calibration holdout grid.}\label{tab:s5_holdout_grid}\\
+\toprule
+Variant & Sets & Rows & Mean gap & Max gap & Unmap & Raw H & Code H & Family H & Temp. & Top \(p\) \\
+\midrule
+\endfirsthead
+\caption[]{Finite-action-code entropy-calibration holdout grid. (continued)}\\
+\toprule
+Variant & Sets & Rows & Mean gap & Max gap & Unmap & Raw H & Code H & Family H & Temp. & Top \(p\) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{11}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A5 & 7 & 756 & 1.165 & 1.299 & 0 & 1.165 & 1.165 & 1.165 & -- & -- \\
+\ttbreak{A5\_attempt}{t02\_p07} & 7 & 756 & 1.147 & 1.348 & 0 & 1.147 & 1.147 & 1.147 & 0.2 & 0.7 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\clearpage\section*{S6. Robustness, Open-Weight Reference Model and Blinded Audit}
+
+Robustness checks evaluate the direction of the result across tested prompts, tested model identifiers, one local open-weight reference model and blinded annotation. These checks support robustness across the tested settings; they do not imply coverage of untested models or prompts. The agreement table reports Cohen's \(\kappa\), a chance-adjusted nominal-agreement statistic \citep{cohen1960coefficient}.
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.090\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}L{0.054\linewidth}@{}}
+\caption{Cross-model subset criterion summary.}\label{tab:s6_cross_model}\\
+\toprule
+Model & Status & Exp. & Profile & Calls & Remote & Unrecov. & Unrec. rate & Vars. & Ctrls. & Min ctrl ds & Strong HS ds & Fallback & SC>HS ds \\
+\midrule
+\endfirsthead
+\caption[]{Cross-model subset criterion summary. (continued)}\\
+\toprule
+Model & Status & Exp. & Profile & Calls & Remote & Unrecov. & Unrec. rate & Vars. & Ctrls. & Min ctrl ds & Strong HS ds & Fallback & SC>HS ds \\
+\midrule
+\endhead
+\midrule
+\multicolumn{14}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\ttbreak{gpt-5.4}{mini} & pass & cross subset & full & 1995 & 1995 & 0 & 0 & 5 & 4 & 5 & 0 & \ttbreak{qwen3}{30b-a3b} & 7 \\
+\ttbreak{gpt-4.1}{mini} & pass & cross subset & full & 1995 & 1995 & 0 & 0 & 5 & 4 & 6 & 0 & \ttbreak{qwen3}{30b-a3b} & 7 \\
+deepseek-chat & pass & cross subset & full & 1995 & 1995 & 0 & 0 & 5 & 4 & 6 & 0 & \ttbreak{qwen3}{30b-a3b} & 7 \\
+\ttbreak{gemini-2.5}{flash} & pass & cross subset & full & 1995 & 1995 & 2 & 0.001 & 5 & 4 & 7 & 0 & \ttbreak{qwen3}{30b-a3b} & 7 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.080\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}L{0.046\linewidth}@{}}
+\caption{Open-weight Qwen2.5-14B-Instruct AFCI summary by variant.}\label{tab:s6_open_weight}\\
+\toprule
+Variant & R \(\mu\) & M \(\mu\) & Veto \(\mu\) & Self \(\mu\) & Supp. \(\mu\) & AFCI \(\mu\) & AFCI+ \(\mu\) & R \(\sigma\) & M \(\sigma\) & Veto \(\sigma\) & Self \(\sigma\) & Supp. \(\sigma\) & AFCI \(\sigma\) & AFCI+ \(\sigma\) & Rows \\
+\midrule
+\endfirsthead
+\caption[]{Open-weight Qwen2.5-14B-Instruct AFCI summary by variant. (continued)}\\
+\toprule
+Variant & R \(\mu\) & M \(\mu\) & Veto \(\mu\) & Self \(\mu\) & Supp. \(\mu\) & AFCI \(\mu\) & AFCI+ \(\mu\) & R \(\sigma\) & M \(\sigma\) & Veto \(\sigma\) & Self \(\sigma\) & Supp. \(\sigma\) & AFCI \(\sigma\) & AFCI+ \(\sigma\) & Rows \\
+\midrule
+\endhead
+\midrule
+\multicolumn{16}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A4 & 1 & 0.5 & 1 & 1 & 1 & 0.875 & 0.9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\ttbreak{A4\_no}{reason} & 0.5 & 0.5 & 1 & 1 & 1 & 0.75 & 0.8 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\ttbreak{A4\_no}{veto} & 1 & 0.5 & 0.5 & 1 & 1 & 0.75 & 0.8 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+A5 & 0.446 & 0.25 & 0.5 & 0.393 & 0 & 0.397 & 0.318 & 0.019 & 0 & 0 & 0.031 & 0 & 0.008 & 0.006 & 21 \\
+\ttbreak{A5\_schema}{posthoc\_fields} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 21 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.160\linewidth}L{0.160\linewidth}L{0.160\linewidth}L{0.160\linewidth}L{0.160\linewidth}L{0.120\linewidth}@{}}
+\caption{Expanded blinded audit reliability by annotation dimension.}\label{tab:s6_blind}\\
+\toprule
+Dimension & Annotator A & Annotator B & Overlap items & Agreement & Cohen kappa \\
+\midrule
+\endfirsthead
+\caption[]{Expanded blinded audit reliability by annotation dimension. (continued)}\\
+\toprule
+Dimension & Annotator A & Annotator B & Overlap items & Agreement & Cohen kappa \\
+\midrule
+\endhead
+\midrule
+\multicolumn{6}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+final action reason-consistent & annotator\_01 & annotator\_02 & 1200 & 0.958333 & 0.912127 \\
+final action reason-consistent & annotator\_01 & annotator\_03 & 1200 & 0.955833 & 0.907158 \\
+final action reason-consistent & annotator\_02 & annotator\_03 & 1200 & 0.990833 & 0.980522 \\
+action respects relevant memory & annotator\_01 & annotator\_02 & 1200 & 0.997500 & 0.989211 \\
+action respects relevant memory & annotator\_01 & annotator\_03 & 1200 & 0.997500 & 0.989211 \\
+action respects relevant memory & annotator\_02 & annotator\_03 & 1200 & 1.000000 & 1.000000 \\
+veto\_was\_appropriate & annotator\_01 & annotator\_02 & 1200 & 1.000000 & 1.000000 \\
+veto\_was\_appropriate & annotator\_01 & annotator\_03 & 1200 & 1.000000 & 1.000000 \\
+veto\_was\_appropriate & annotator\_02 & annotator\_03 & 1200 & 1.000000 & 1.000000 \\
+veto changed first impulse & annotator\_01 & annotator\_02 & 1200 & 1.000000 & 1.000000 \\
+veto changed first impulse & annotator\_01 & annotator\_03 & 1200 & 1.000000 & 1.000000 \\
+veto changed first impulse & annotator\_02 & annotator\_03 & 1200 & 1.000000 & 1.000000 \\
+reason\_looks\_posthoc & annotator\_01 & annotator\_02 & 1200 & 0.960000 & 0.917801 \\
+reason\_looks\_posthoc & annotator\_01 & annotator\_03 & 1200 & 0.961667 & 0.921303 \\
+reason\_looks\_posthoc & annotator\_02 & annotator\_03 & 1200 & 0.995000 & 0.989652 \\
+verbose/template-like without control & annotator\_01 & annotator\_02 & 1200 & 0.998333 & 0.971364 \\
+verbose/template-like without control & annotator\_01 & annotator\_03 & 1200 & 0.996667 & 0.942728 \\
+verbose/template-like without control & annotator\_02 & annotator\_03 & 1200 & 0.998333 & 0.972113 \\
+irrelevant cue caused inappropriate change & annotator\_01 & annotator\_02 & 1200 & 0.974167 & 0.865842 \\
+irrelevant cue caused inappropriate change & annotator\_01 & annotator\_03 & 1200 & 0.972500 & 0.860015 \\
+irrelevant cue caused inappropriate change & annotator\_02 & annotator\_03 & 1200 & 0.993333 & 0.965260 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+Annotation ethics scope: three trained annotators contributed output-level quality-control labels under a fixed rubric and full-overlap blinded design. The audit did not collect personal, behavioral, health, intervention or neural data from annotators or any other individuals. Annotation was performed as expert quality-control scoring of model outputs for the project record rather than as human-subjects data collection.
+
+\clearpage\section*{S7. Validation Source-Data Map, Reproducibility and Export Coverage}
+
+The reproducibility map links each claim-supporting statement to its table, result export, criterion summary, analysis entry point and checksum. Full SHA-256 values are retained in the corresponding CSV export; the PDF table reports the first 12 hexadecimal characters for readability. The validation source-data map below gives the direct source-data and script paths for the main validation figure, the SWE-bench Lite reliability displays and the formal control definitions.
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.180\linewidth}L{0.250\linewidth}L{0.430\linewidth}L{0.090\linewidth}@{}}
+\caption{Validation source-data and control-construction map.}\label{tab:s7_validation_source_map}\\
+\toprule
+Item & Role & Source data, config or script path & Checksum or provenance \\
+\midrule
+\endfirsthead
+\caption[]{Validation source-data and control-construction map. (continued)}\\
+\toprule
+Item & Role & Source data, config or script path & Checksum or provenance \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Main validation panel a source data & Open-weight core no-context controls & \path{manuscript/figures/source_data/figure5a_open_weight_core_controls.csv} & 12ef8d181136 \\
+Main validation panel b source data & Open-weight state-boundary lesion & \path{manuscript/figures/source_data/figure5b_open_weight_state_boundary_lesion.csv} & 803140cd02ce \\
+Main validation panel c source data & SWE-bench Lite full 300-record incremental AUC & \path{manuscript/figures/source_data/figure5c_swebench_incremental_auc.csv} & 261436e42398 \\
+Main validation panel d source data & SWE-bench Lite single-predictor AUC comparison & \path{manuscript/figures/source_data/figure5d_swebench_single_predictor_auc.csv} & 8897f8c61c79 \\
+Main validation panel e source data & SWE-bench Lite sensitivity and binding-guard summary & \path{manuscript/figures/source_data/figure5e_swebench_sensitivity_guard.csv} & 4dcd90ac380e \\
+Main validation rendering and export QA & Figure rendering and export-QA script & \path{manuscript/figures/scripts/build_validation_figure5.R}; \path{audit/figure5_primary_validation_export_qc_20260530.csv} & 61d69f9d8264 / 80f8d170bb37 \\
+SWE-bench reliability calibration source data & Issue-grouped five-fold reliability calibration for the full 300-record issue-to-file endpoint & \path{manuscript/figures/source_data/extended_data_figure9_swebench_reliability_calibration.csv}; \path{manuscript/figures/source_data/swebench_cv_reliability_predictions.csv} & archived manifest \\
+SWE-bench threshold analysis source data & Thresholded localization-guard analysis over predicted hit@3 probabilities & \path{manuscript/figures/source_data/extended_data_figure10_swebench_threshold_analysis.csv}; \path{manuscript/figures/scripts/build_swebench_reliability_figures.R} & archived manifest \\
+Main Table 1 source data & Claim ledger with supported claims and excluded inferences & \path{manuscript/tables/table1_validation_evidence_interpretation.csv} & archived manifest \\
+Supplementary Table 33 source data & Validation controls and interpretation status & \path{manuscript/tables/supplementary_table_33_validation_controls.csv} & 7a88ca507fb7 \\
+Decisive-field positive-control summaries & Two-model decisive-field and wrapper result tables & \path{manuscript/tables/table8_decisive_field_positive_control_condition_summary.csv}; \path{manuscript/tables/table8_control_binding_wrapper_scrambled_summary.csv} & archived manifest \\
+Decisive-field positive-control leakage audit & Prompt/scorer leakage and scope checks & \path{manuscript/tables/table8_decisive_field_positive_control_leakage_audit.csv} & e1fdfc5005ce \\
+Local strict matching summaries & Local Qwen2.5-1.5B forced-budget entropy/token audit & \path{manuscript/tables/table16_local_strict_matching_condition_summary.csv}; \path{manuscript/tables/table16_local_strict_matching_gate_summary.csv} & archived manifest \\
+SWE-bench Lite issue-to-file summaries & Complete 300-record issue-localization summaries and execution-slice preparation status & \path{results/paper1_revision/real_task_predictive_validity/swebench_v2_full300_api_20260529_merged/gate_status.json}; \path{results/paper1_revision/real_task_predictive_validity/swebench_v2_full300_api_20260529_merged/official_execution_slice_environment_status.json}; \path{results/paper1_revision/real_task_predictive_validity/swebench_v2_full300_api_20260529_merged/official_execution_slice_analysis_v3_apply_repair/official_execution_slice_gate_status.json} & archived manifest \\
+Open-weight matrix config path & Model, scaffold, task-family and variant manifest & \path{results/paper1_revision/remote_5090_run3_20260508/csb_formal_execution_manifest/execution_manifest.json} & 11e3390109fd \\
+Formal API validation config path & API validation run manifest & \path{results/paper1_revision/remote_5090_run3_20260508/formal_api_validation/formal_api_full_20260510_0030/run_manifest.json} & 8712dbea8b1b \\
+Distribution-matched control construction & Offline/no-context action-prior policy and prompt construction & \path{src/freewill/structured_control_validation.py} & eba9d1039034 \\
+Strict-lesion construction & Removal of decisive intervention-carrying field with non-decisive context retained & \path{src/freewill/structured_control_validation.py} & eba9d1039034 \\
+Counterfactual transform QC and consistency-passing transform & Transform definitions and formal holdout launcher & \path{src/freewill/structured_control_validation.py}; \path{scripts/run/run_formal_open_weight_validation.py} & eba9d1039034 / 0f9cfd41e1af \\
+Token/compute criterion script & Prompt-token, total-token and latency-proxy criterion analysis & \path{scripts/run/analyze_formal_validation_results.py}; \path{scripts/run/audit_open_weight_token_entropy.py} & 404f5edb4132 / f037f6424513 \\
+Entropy-prior behavioral-control script & Calibration-split action-prior selection and entropy-prior no-field behavioral control & \path{scripts/run/select_formal_entropy_settings.py}; \path{src/freewill/structured_control_validation.py} & f29b12ebe627 / eba9d1039034 \\
+Local strict matching script & Local tokenizer padding, fixed-generation and forced-budget audit implementation & \path{scripts/run/run_strict_matching_local.py}; \path{src/freewill/strict_matching_local.py} & archived manifest \\
+SWE-bench Lite localization scripts & Dataset fetch, oracle-free issue-to-file prompts, shard merge, readiness audit, execution-slice patch generation and v3 apply-check/repair filtering & \path{scripts/run/run_swebench_file_localization_v2_api.py}; \path{scripts/run/merge_swebench_fileloc_v2_shards.py}; \path{scripts/run/run_swebench_execution_slice_patch_generation_api.py}; \path{scripts/run/run_swebench_patch_generation_v3_apply_repair.py}; \path{src/freewill/real_task_predictive_validity.py} & archived manifest \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.150\linewidth}L{0.065\linewidth}L{0.275\linewidth}L{0.165\linewidth}L{0.190\linewidth}L{0.090\linewidth}@{}}
+\caption{Claim-to-evidence reproducibility map.}\label{tab:s7_claim_artifact_map}\\
+\toprule
+Claim & Main table & Result export & Criterion-summary alias & Analysis entry point & Checksum prefix \\
+\midrule
+\endfirsthead
+\caption[]{Claim-to-evidence reproducibility map. (continued)}\\
+\toprule
+Claim & Main table & Result export & Criterion-summary alias & Analysis entry point & Checksum prefix \\
+\midrule
+\endhead
+\midrule
+\multicolumn{6}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+baseline lesion matrix separates unpredictability and trace structure & Table 2 & \ttthree{table2\_baseline}{lesion\_matrix}{gate\_summary.csv} & \ttbreak{gate/baseline\_lesion\_matrix}{gate\_status.json} & \ttbreak{paper1-run-baseline-lesion-matrix}{configs/ai\_matrix.yaml} & 5f2fae5d2ab5 \\
+matched-interface AFCI rules out field availability alone & Table 3 & \ttthree{table3\_schema\_gate\_summary.csv}{table3\_schema\_afci\_by\_variant.csv}{table3\_schema\_comparator\_gate\_status.csv} & \ttbreak{gate/matched\_interface\_controls}{gate\_status.json} & \ttbreak{paper1-run-matched-interface-controls}{configs/schema\_equalized\_controls.yaml} & 2fdfaffdbfdb \\
+finite-action-code behavior supports action-level component coupling & Table 4 & \ttbreak{table4\_behavior\_gate\_summary.csv}{table4\_behavior\_dataset\_gate\_contrasts.csv} & \ttbreak{gate/finite\_action\_behavior}{gate\_status.json} & \ttbreak{paper1-run-finite-action-behavior}{configs/behavioral\_counterfactuals.yaml} & 55820262e805 \\
+strong stochastic controls do not recover structured-control profile & Table 9 & \ttbreak{table7\_robustness}{gate\_summary.csv} & \ttbreak{gate/strong\_stochastic\_controls}{gate\_status.json} & \ttbreak{paper1-run-strong-stochastic-controls}{configs/ai\_matrix.yaml} & 1f1de7d4d18d \\
+\plainbreak{predefined entropy closeness}{was not satisfied} & \plainbreak{Table 6}{Table 12} & \ttthree{table6\_strict\_a5\_em\_calibration\_gate\_summary.csv}{table6\_a5\_entropy\_matching\_calibration\_gate\_summary.csv}{table12\_entropy\_calibration\_threshold\_summary.csv} & \ttbreak{gate/entropy\_calibration\_diagnostic}{gate\_status.json} & \ttbreak{paper1-run-entropy-diagnostics}{paper1-run-a5-entropy-calibration} & \ttbreak{b6150257}{c3ae} \\
+cross-model tested subset preserves structured-control greater-than high-stochasticity direction & Table 9 & \ttbreak{table7\_cross\_model}{gate\_summary.csv} & \ttbreak{gate/cross\_model\_subset}{gate\_status.json} & \ttbreak{paper1-run-cross-model-subset}{configs/ai\_matrix.yaml} & 2f8b5ff04901 \\
+open-weight reference model preserves structured-control greater-than high-stochasticity AFCI direction & Table 9 / Table 10 & \ttbreak{table7\_open\_weight\_afci\_by\_variant.csv}{table7\_open\_weight\_afci\_by\_dataset\_variant\_seed.csv} & \ttbreak{gate/open\_weight\_anchor}{gate\_status.json} & \ttbreak{paper1-run-open-weight-anchor}{configs/open\_weight\_anchor.yaml} & d76affe4ffe8 \\
+decisive-field positive control recovers the finite-action binding readout & Table 8 & \ttbreak{table8\_decisive\_field}{positive\_control\_condition\_summary.csv} & \ttbreak{decisive\_field}{positive\_control/gate\_status.json} & \ttthree{scripts/run}{run\_decisive\_field}{positive\_control\_api.py} & archived manifest \\
+local wrapper reduces scrambled-field binding & Table 8 & \ttbreak{table8\_control\_binding\_wrapper}{scrambled\_summary.csv} & \ttbreak{decisive\_field}{positive\_control/gate\_status.json} & \ttthree{scripts/run}{run\_decisive\_field}{positive\_control\_api.py} & archived manifest \\
+bounded local forced-budget entropy/token audit preserves structured-state advantage & Table 16 & \ttbreak{table16\_local\_strict\_matching}{condition\_summary.csv} & \ttbreak{local\_strict\_matching}{gate\_status.json} & \ttbreak{scripts/run}{run\_strict\_matching\_local.py} & 0206bfa8d6db \\
+SWE-bench Lite issue-to-file validation passes oracle-free predictor gate & Table 17 & \ttbreak{swebench\_v2\_full300}{api\_20260529\_merged/gate\_status.json} & \ttbreak{real\_task\_predictive\_validity}{swebench\_v2\_readiness\_audit.json} & \ttbreak{scripts/run}{run\_swebench\_file\_localization\_v2\_api.py} & archived manifest \\
+blinded audit supports scorer interpretation & Table 9 & \ttbreak{table7\_blind\_audit\_reliability}{by\_dimension.csv} & \ttbreak{gate/strict\_blind\_audit}{gate\_status.json} & \ttbreak{paper1-run-blind-audit-export}{configs/ai\_matrix.yaml} & bffe01d6d1fd \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+Interface-diagnostic rows are summarized separately from effect estimates. The taxonomy distinguishes final-criterion-compatible interface diagnostics, non-final provider-interface attempts and entropy-calibration diagnostics. The export-coverage table lists the table exports underlying the manuscript and this supplement.
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.160\linewidth}L{0.160\linewidth}L{0.160\linewidth}L{0.160\linewidth}L{0.160\linewidth}L{0.120\linewidth}@{}}
+\caption{Interface-diagnostic taxonomy and interpretation.}\label{tab:s7_interface_diagnostics}\\
+\toprule
+Source & Experiment & Model & Diagnostic type & Rows & Interpretation \\
+\midrule
+\endfirsthead
+\caption[]{Interface-diagnostic taxonomy and interpretation. (continued)}\\
+\toprule
+Source & Experiment & Model & Diagnostic type & Rows & Interpretation \\
+\midrule
+\endhead
+\midrule
+\multicolumn{6}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Cross-model robustness & Gemini full run & gemini-2.5-flash & payload not object & 2 & Final criterion met; retained as interface diagnostic. \\
+Provider-interface compatibility check & Qwen direct-provider check & qwen3-30b-a3b & HTTP 400 & 100 & Compatibility rows outside the final-evidence criteria. \\
+Entropy-calibration diagnostic & entropy-attempt calibration & qwen3-30b-a3b fallback & HTTP 500 / fallback metadata & 594 & Diagnostic calibration rows; predefined closeness was not satisfied. \\
+Baseline lesion matrix & aggregate baseline accounting & gpt-5.4-mini & aggregate only & 16 & Aggregate unrecovered-output count; no trace-level taxonomy. \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+\begin{landscape}
+\tiny
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.200\linewidth}L{0.250\linewidth}L{0.250\linewidth}L{0.220\linewidth}@{}}
+\caption{Table-export coverage. Full-precision values are retained in the CSV exports. Data rows exclude the header row and any empty trailing lines.}\label{tab:s7_exports}\\
+\toprule
+Export label & Data rows & Columns & Leading columns \\
+\midrule
+\endfirsthead
+\caption[]{Table-export coverage. Full-precision values are retained in the CSV exports. Data rows exclude the header row and any empty trailing lines. (continued)}\\
+\toprule
+Export label & Data rows & Columns & Leading columns \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Variant name registry & 17 & 5 & canonical variant, used in, definition, aliases, role \\
+Mechanistic claim map & 3 & 5 & claim component, operational test, contrary result, interpretive boundary \\
+Baseline lesion-matrix criterion summary & 12 & 3 & criterion, field, value \\
+Baseline trace metrics by dataset, variant and replicate index & 168 & 19 & variant, VBI, SCI, VEI, RSI, ACI, CSVI, unpredictability ... \\
+Baseline trace metrics by variant & 8 & 18 & variant, VBI mean, SCI mean, VEI mean, RSI mean, ACI mean, CSVI mean, unpredictability mean ... \\
+Matched-interface AFCI by dataset, variant and replicate index & 189 & 10 & dataset namespace, variant, replicate index, reason alignment, memory alignment, veto alignment ... \\
+Matched-interface AFCI by variant & 9 & 16 & variant, alignment means, AFCI mean, AFCI with suppression mean, SD fields ... \\
+Matched-interface dataset contrasts & 56 & 5 & dataset namespace, variant, AFCI, structured full AFCI, paired contrast \\
+Matched-interface comparator criterion status & 7 & 4 & control variant, dataset count, structured greater-than-control dataset count, recovery count \\
+Matched-interface criterion summary & 11 & 3 & criterion, field, value \\
+Finite-action condition rates & 504 & 7 & dataset namespace, variant, replicate index, condition, correct rate, unmapped rate, row count \\
+Finite-action dataset criterion contrasts & 7 & 10 & dataset namespace, structured variant, ablation comparators, high-stochasticity comparator, component contrasts ... \\
+Finite-action criterion summary & 16 & 3 & criterion, field, value \\
+Finite-action metrics by dataset, variant and replicate index & 84 & 16 & dataset namespace, variant, replicate index, condition rates and component scores ... \\
+Finite-action summary by dataset and variant & 28 & 9 & dataset namespace, variant, B scores, cue specificity, behavioral structured action control ... \\
+Finite-action summary by variant & 4 & 16 & variant, component-score means, behavioral composite mean, false-positive and row-count summaries ... \\
+Entropy diagnostics by source and variant & 20 & 11 & source, variant, raw, canonical, semantic and action-family entropy means and SDs ... \\
+Full entropy diagnostic units & 594 & 14 & source, output namespace, variant, replicate index, row count, unique action counts ... \\
+Strict entropy-attempt calibration grid & 28 & 12 & variant, temperature, top-p, paired counts, absolute entropy gaps ... \\
+Strict entropy-attempt criterion summary & 13 & 3 & criterion, field, value \\
+Finite-action entropy-calibration grid & 14 & 11 & variant, dataset count, row count, predefined entropy gap, unmapped action rate, entropy gaps ... \\
+Finite-action entropy-calibration criterion summary & 30 & 3 & criterion, field, value \\
+Finite-action entropy-calibration holdout grid & 2 & 11 & variant, dataset count, row count, predefined entropy gap, unmapped action rate, entropy gaps ... \\
+Blinded-audit reliability by dimension & 7 & 6 & dimension, annotator labels, overlap items, agreement, Cohen's kappa \\
+Cross-model criterion summary & 4 & 14 & model, status, experiment profile, calls, interface diagnostics, directional dataset counts ... \\
+Open-weight AFCI by dataset, variant and replicate index & 105 & 10 & dataset namespace, variant, replicate index, alignment terms and AFCI \\
+Open-weight AFCI by variant & 5 & 16 & variant, alignment means, AFCI means, SD fields and rows \\
+Robustness criterion summary & 8 & 13 & experiment, status, calls, interface diagnostics, directional counts, parse and audit statistics \\
+Decisive-field positive-control condition summary & 12 & 13 & model, condition, rows, accuracy, wrapped accuracy, wrapper change rate ... \\
+Decisive-field positive-control gate summary & 2 & 10 & model, full-state accuracy, only-decisive accuracy, best control accuracy, recovery fraction ... \\
+Decisive-field positive-control task cells & 240 & 4 & model, task family, full-state accuracy, only-decisive accuracy \\
+Decisive-field positive-control leakage audit & 5 & 4 & audit item, evidence, status, interpretation \\
+Control-binding wrapper scrambled summary & 2 & 7 & model, rows, raw scrambled following, wrapped scrambled following, raw expected accuracy ... \\
+Local strict matching condition summary & 2 & 10 & condition, rows, accuracy, invalid rate, canonical-action entropy, token and latency means \\
+Local strict matching gate summary & 1 & 12 & status, prompt match rate, completion match rate, total-token ratio, latency ratio ... \\
+SWE-bench file-localization predictor summary & 11 & 5 & predictor, hit@3 AUC, hit@3 Pearson, no-violation AUC, sign convention \\
+SWE-bench file-localization model summary & 6 & 13 & model, model-instance rows, localization hit@3, violation rates, binding score and execution-slice boundary columns \\
+SWE-bench file-localization gate summary & 1 & 21 & status, rows, model-instance rows, hit@3 counts, AUC summaries, wrapper status and execution-slice boundary columns \\
+Derived effect-size summary & 6 & 3 & evidence block, direction, stronger summary \\
+Proxy token/compute audit summary & 9 & 5 & audit item, measurement or proxy, availability, evidence source, interpretation \\
+Entropy calibration threshold summary & 44 & 12 & source, variant, entropy gaps, strict threshold, pass flag \\
+Interface-diagnostic taxonomy & 4 & 6 & source, experiment, model, diagnostic type, rows, interpretation \\
+Claim-to-evidence reproducibility map & 12 & 7 & claim, main table, result export, criterion summary, analysis entry point, SHA-256 \\
+Statistical sensitivity summary & 8 & 10 & contrast, independent unit, direction count, minimum contrast, sign test \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+
+\clearpage
+\section*{S8. Statistical and Scoring Definitions}
+
+\begin{landscape}
+\scriptsize
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}L{0.245\linewidth}L{0.090\linewidth}L{0.055\linewidth}L{0.060\linewidth}L{0.080\linewidth}L{0.080\linewidth}L{0.095\linewidth}L{0.085\linewidth}L{0.060\linewidth}@{}}
+\caption{Dataset-level statistical sensitivity summary for primary contrasts. Exact sign tests are one-sided under a 0.5 null probability for a positive dataset direction; two-sided values are doubled and capped at one.}\label{tab:s8_stat_sensitivity}\\
+\toprule
+Contrast & Unit & Units & \plainbreak{Positive}{units} & \plainbreak{Minimum}{contrast} & \plainbreak{Mean}{contrast} & \plainbreak{LODO}{minimum mean} & \plainbreak{Top-effect}{removed mean} & \plainbreak{One-sided}{sign \(p\)} \\
+\midrule
+\endfirsthead
+\caption[]{Dataset-level statistical sensitivity summary for primary contrasts. (continued)}\\
+\toprule
+Contrast & Unit & Units & \plainbreak{Positive}{units} & \plainbreak{Minimum}{contrast} & \plainbreak{Mean}{contrast} & \plainbreak{LODO}{minimum mean} & \plainbreak{Top-effect}{removed mean} & \plainbreak{One-sided}{sign \(p\)} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{9}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+finite behavior: structured-control--high-stochasticity composite & dataset namespace & 7 & 7 & 0.832 & 0.886 & 0.875 & 0.875 & 0.0078125 \\
+reason ablation: structured-control--reason lesion B\_RSI & dataset namespace & 7 & 7 & 0.964 & 1.017 & 0.982 & 0.982 & 0.0078125 \\
+veto ablation: structured-control--veto lesion B\_VEI & dataset namespace & 7 & 7 & 0.992 & 0.997 & 0.996 & 0.996 & 0.0078125 \\
+memory behavior: structured-control--high-stochasticity B\_MCI & dataset namespace & 7 & 7 & 0.556 & 0.774 & 0.751 & 0.751 & 0.0078125 \\
+self-continuity behavior: structured-control--high-stochasticity B\_SCI & dataset namespace & 7 & 7 & 0.608 & 0.811 & 0.795 & 0.795 & 0.0078125 \\
+schema AFCI: structured full--stochastic plain & dataset namespace & 7 & 7 & 0.262 & 0.302 & 0.297 & 0.297 & 0.0078125 \\
+schema AFCI: structured full--weakest control comparator & dataset namespace & 7 & 7 & 0.492 & 0.500 & 0.499 & 0.499 & 0.0078125 \\
+open-weight AFCI: structured-control--high-stochasticity & dataset namespace & 7 & 7 & 0.467 & 0.478 & 0.476 & 0.476 & 0.0078125 \\
+\end{longtable}
+\normalsize
+\end{landscape}
+
+Let \(\mathcal{D}\) denote the seven dataset namespaces and \(\mathcal{I}_{d,v}\) the retained generations for dataset \(d\) and variant \(v\). Raw final-action unpredictability is reported as Shannon entropy \citep{shannon1948mathematical},
+\begin{equation}
+H_{d,v}=-\sum_{a\in\mathcal{A}_{d,v}}\hat{p}_{d,v}(a)\log_2\hat{p}_{d,v}(a),
+\end{equation}
+where \(\mathcal{A}_{d,v}\) is the observed final-action support and \(\hat{p}_{d,v}\) is the empirical action frequency. The baseline structured composite is
+\begin{equation}
+C_{d,v}=\frac{1}{4}\left(\mathrm{SCI}_{d,v}+\mathrm{RSI}_{d,v}+\mathrm{VEI}_{d,v}+\mathrm{ACI}_{d,v}\right).
+\end{equation}
+For matched-interface controls, each scored generation has
+\begin{equation}
+\mathrm{AFCI}_{i,v}=\frac{1}{4}\left(R_{i,v}+M_{i,v}+Q_{i,v}+S_{i,v}\right),
+\end{equation}
+where \(R\), \(M\), \(Q\) and \(S\) denote reason-action, memory-action, veto-action and self-action alignment terms. The implementation uses emitted trace fields, first impulse, final action and predefined field-source metadata to evaluate these terms. Thus AFCI is an interface-level action-field coupling analysis.
+
+For the finite-action-code benchmark, the canonicalizer maps the raw final action \(o_i\) to \(\hat{y}_i=g(o_i)\in\mathcal{Y}\), where \(\mathcal{Y}=\{\texttt{ACTION\_A},\texttt{ACTION\_B},\texttt{VETO},\texttt{DEFER},\texttt{RECALL\_PRIOR},\texttt{INVALID\_OR\_UNMAPPED}\}\). If \(y_i^-\) is the scorer-side expected action before the manipulation and \(y_i^+\) is the scorer-side expected action after the manipulation, then
+\begin{align}
+c_i &= \mathbf{1}\{\hat{y}_i=y_i^+\},\\
+u_i &= \mathbf{1}\{z_i=\mathrm{irrelevant}\}\mathbf{1}\{\hat{y}_i\neq y_i^-\}.
+\end{align}
+The component score for component \(k\) is the target-minus-irrelevant contrast
+\begin{equation}
+B_k(v)=\widehat{\Pr}(c_i=1\mid z_i\in\mathcal{T}_k,v)-\widehat{\Pr}(u_i=1\mid z_i\in\mathcal{N}_k,v),
+\end{equation}
+where \(\mathcal{T}_k\) is the target-probe set and \(\mathcal{N}_k\) is the irrelevant or placebo-probe set.
+
+Dataset-cluster bootstrap intervals resample dataset identifiers with replacement, following the non-parametric bootstrap principle of estimating uncertainty from resampled empirical units \citep{efron1993bootstrap}. For a metric \(m\), comparator \(q\), and dataset \(d\), the paired contrast is
+\begin{equation}
+\delta_d(q;m)=\bar{m}_{d,\mathrm{A4}}-\bar{m}_{d,q},
+\end{equation}
+with \(\mathrm{A4}\) replaced by \(\mathrm{A4\_full}\) for matched-interface AFCI. The reported lower 95\% bound is the empirical 2.5th percentile of the bootstrap distribution over \(|\mathcal{D}|\)-dataset resamples.
+
+For entropy calibration, layer-specific entropy \(H^{(\ell)}_{d,v}\) is computed for raw, rule-canonical, semantic-cluster and action-family representations. If \(\theta=(T,p)\) denotes a candidate high-stochasticity temperature/top-p setting, the predefined calibration gap is
+\begin{equation}
+\Gamma(\theta)=\max_{\ell}\left|\frac{1}{|\mathcal{D}|}\sum_{d\in\mathcal{D}}H^{(\ell)}_{d,\mathrm{A5}(\theta)}-\frac{1}{|\mathcal{D}|}\sum_{d\in\mathcal{D}}H^{(\ell)}_{d,\mathrm{A4}}\right|.
+\end{equation}
+The predefined criterion requires \(\Gamma(\theta)\leq 0.15\). The retained calibration attempts did not satisfy this criterion; the entropy results are reported as calibration diagnostics.
+
+\clearpage
+\section*{S9. Open-Weight and Formal Validation Controls}
+
+This section records the validation experiments that support the main-text evidence summary. The baseline, matched-interface, finite-action and entropy-diagnostic sections above provide the primary mechanistic evidence and calibration checks. The rows below summarize the open-weight finite-action matrix, strict-lesion slice, decisive-field positive-control experiment, local control-binding wrapper, formal control-audit criteria, local forced-budget entropy/token matching, entropy-prior behavioral control, the SWE-bench Lite issue-to-file localization validation, counterfactual-transform audit, API validation and expanded blinded annotation.
+
+\scriptsize
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{p{0.20\textwidth}p{0.27\textwidth}p{0.31\textwidth}p{0.16\textwidth}}
+\caption{Validation controls and interpretation status.}
+\label{tab:s33_validation}\\
+\toprule
+Evidence block & Scope & Main result & Interpretation status \\
+\midrule
+\endfirsthead
+\toprule
+Evidence block & Scope & Main result & Interpretation status \\
+\midrule
+\endhead
+Open-weight finite-action matrix & Qwen2.5-7B-Instruct, Qwen2.5-14B-Instruct, Qwen2.5-32B-Instruct and Mistral-7B-Instruct-v0.3; 126,000 scored generations per model; three agent scaffolds; 20 task families; seven variants; three seeds & Structured accuracy exceeded distribution-matched offline/no-context controls in 236/240 model--scaffold--task cells, scrambled-context controls in 240/240 cells and no-fields controls in 238/240 cells; mean deltas were 0.593, 0.895 and 0.550, respectively & Supports open-weight size and family validation of the no-context control result \\
+Independent Mistral family & Mistral-7B-Instruct-v0.3 full matrix & Core no-context controls satisfied the predefined criteria in 60/60 cells for no-fields, scrambled-context and distribution-matched controls & Supports non-Qwen model-family generalization \\
+Strict Qwen32B target lesion & Qwen2.5-32B strict lesion slice; 28,800 scored generations & Structured accuracy exceeded strict target lesion in 60/60 cells; structured mean 0.998, strict-lesion mean 0.037, mean delta 0.961 & Supports the narrower strict-lesion claim; ordinary target lesions remain a boundary condition \\
+Decisive-field positive control & \texttt{gpt-5.4-mini} and \texttt{qwen3-max}; 20 task families; six events per family; 1,440 fallback-free API generations & Full-state and only-decisive-field accuracy were both 1.000 in both models, while the best non-decisive control was 0.208; the only-decisive field is intentionally visible and action-code-bearing & Supports a diagnostic decisive-field readout within the finite-action protocol \\
+Local control-binding wrapper & Same 1,440-row positive-control experiment; no second model call & Irrelevant-cue accuracy remained 1.000; raw scrambled-field following was 0.958 for \texttt{gpt-5.4-mini} and 0.533 for \texttt{qwen3-max}, reduced to 0.033 in both models after wrapping & Finite-action guardrail evidence; not real-environment localization or task-execution reliability \\
+Formal Qwen control-audit slice & 63,360 planned and observed rows; no duplicate analysis keys; parse/error rate 0.140\% & Structured accuracy exceeded no-fields, scrambled-context, distribution-matched, strict-lesion and formal control variants in the relevant cells & Supports formal-control behavior in the Qwen slice \\
+Token-prompt audit slice & 17,280 planned and observed rows; no duplicate analysis keys; parse/error rate 0.069\% & Prompt-token counts were aligned for the entropy-token variant, but mean total-token ratios and latency proxies remained outside the strict token/compute criterion & Report as token-prompt controls with compute audit, not strict token/compute matching \\
+Strict entropy criterion & Formal entropy calibration and holdout audit & Registered entropy gap criterion was not met across model--scaffold cells & Strict entropy matching is not established \\
+Local forced-budget entropy/token audit & Qwen2.5-1.5B-Instruct CPU local inference; 20 task families; two events per family; 80 generations & Prompt and completion tokens matched exactly by event; total-token ratio 1.000; latency ratio 0.997; canonical-action entropy gap 0.020 bits; structured accuracy was 0.900 versus 0.325 for the action-prior no-state control & Bounded local strict-matching pass; original formal strict entropy/token gates remain boundary conditions \\
+Entropy-prior no-field behavioral control & Qwen2.5-14B and Qwen2.5-32B calibration and holdout rows; 24,480 planned and observed rows; no duplicate analysis keys; parse/error rate 0.102\% & The entropy-prior no-field behavioral control remained below the structured-control variant in 120/120 cells, with mean delta 0.660; the strict entropy-gap criterion was satisfied in only 1/6 model--scaffold cells & Report as a final-action entropy-prior behavioral control, not strict entropy matching \\
+SWE-bench Lite issue-to-file validation & \texttt{princeton-nlp/SWE-bench\_Lite} test split; 300 issue records; six API models; 18,000 condition/repeat rows aggregated to 1,800 model--issue records for the primary AUC analysis & Adding the causal state-binding diagnostic composite to a gold-free full non-CSB baseline increased task-only implementation-file hit@3 AUC from 0.732 to 0.915, with \(\Delta\)AUC 0.183 and issue-cluster bootstrap lower 95\% bound 0.095; leave-one-repository and leave-one-model sensitivities were positive in 12/12 and 6/6 analyses & Real issue-record localization predictor evidence; patch/test execution and issue resolution are outside this endpoint \\
+SWE-bench Lite reliability calibration & Same 1,800 model--issue records; issue-grouped five-fold logistic probabilities for the gold-free full non-CSB baseline and baseline plus CSB & Reliability curves and threshold analyses stratify predicted task-only hit@3 probability, task-only hard-constraint violations and task-only constraint-clean hit@3 across acceptance thresholds & Secondary issue-to-file reliability analysis of the same endpoint \\
+Counterfactual transform QC & Deterministic counterfactual-flip transform-quality screen & Text--label consistency screening retained 57/240 candidate counterfactual rows as transform-quality boundary rows & Interpret only consistency-passing transforms as robustness evidence \\
+Consistency-passing counterfactual transform & Frozen transform on Qwen2.5-14B and Qwen2.5-32B with jointly regenerated decisive context and expected action & The consistency-passing transform satisfied the predefined criterion in 120/120 scaffold--family cells; mean structured accuracy was 1.000, compared with 0.992 in the original structured rows & Use as deterministic-transform robustness evidence \\
+Expanded blinded annotation & 1,200 full-overlap items, three annotators & Core dimensions had 100\% valid scoring, no unscorable items and no violations of the blinding protocol; mean pairwise Cohen's kappa was 0.961 and the lowest non-constant dimension kappa was 0.860 & Supports annotation reliability \\
+Formal API external validation & Provider-reported run-time identifiers \texttt{gpt-5.4-mini}, \texttt{gemini-3.1-flash-lite-preview}, \texttt{deepseek-v3.2} and \texttt{qwen3-max}; 14,400 planned rows; 11,520 fallback-free remote API calls & All rows were present, duplicate analysis keys were zero, fallback calls were zero, unrecovered generations were zero and one parse/action error record remained. Structured accuracy exceeded no-fields, scrambled-context, distribution-matched and strict-lesion controls in 238/240, 240/240, 240/240 and 240/240 model--scaffold--task-family cells; all model-, scaffold- and task-family-cluster bootstrap lower 95\% bounds were positive & Supports formal external validation of the core no-context and strict-lesion controls \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+The decisive-field positive-control experiment is a controlled finite-action test. The only-decisive condition exposes the current event's minimal action-relevant field and asks whether the model follows that field rather than surface context, a calibrated action prior or a decisive field from another event. It is not interpreted as unconstrained task solving or hidden reasoning. The examples below show the prompt-level semantics used for the minimal field; the expected action column remains scorer-side metadata used for evaluation, whereas the visible field is the intervention-carrying state supplied to the action query.
+
+\begin{center}
+\scriptsize
+\begin{tabular}{p{0.18\textwidth}p{0.54\textwidth}p{0.18\textwidth}}
+\toprule
+Probe component & Example visible only-decisive field & Scorer-side target role \\
+\midrule
+Reason & Decisive reason field for the event: calibrated task evidence selects \texttt{ACT\_B}. & Target checks whether final action follows the current reason field. \\
+Memory & Decisive memory field for the event: the corrected prior commitment is \texttt{ACT\_A}; stale or unrelated memory is non-decisive. & Target checks whether final action follows corrected memory rather than injected memory. \\
+Veto/constraint & Decisive constraint/veto field for the event: a hard constraint invalidates ordinary actions and requires \texttt{ACT\_VETO}. & Target checks whether final action respects the current constraint field. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The decisive-field leakage and scope audit separates hidden scorer metadata from intentionally visible decisive-field content. The only-decisive condition is not an answer-token-free hidden-reasoning task: it deliberately exposes the current event's minimal action-relevant field. The appropriate leakage question is therefore whether the scorer target variable or target key was serialized as metadata, and whether non-decisive controls withheld or broke the current decisive field.
+
+\begin{center}
+\scriptsize
+\begin{tabular}{p{0.21\textwidth}p{0.43\textwidth}p{0.12\textwidth}p{0.18\textwidth}}
+\toprule
+Audit item & Evidence & Status & Interpretation \\
+\midrule
+\texttt{expected\_action} column not a prompt key & Prompt construction serializes condition, event id, task family, candidate actions and context; \texttt{expected\_action} is retained in traces for scorer-side evaluation after generation. & pass & The scorer target variable is not exposed as a prompt field or JSON key. \\
+Scorer-side target used post-generation & Across 1,440 traces, \texttt{expected\_action\_match} is computed after generation from canonical \texttt{final\_action} versus \texttt{expected\_action}. & pass & The target column is a scorer-side annotation rather than a model-output field. \\
+Non-decisive controls do not expose current decisive state & \texttt{surface\_context\_only} and \texttt{action\_prior\_only} had \texttt{field\_event\_id=none} in 240/240 rows each; \texttt{scrambled\_decisive\_field} used a non-current field id in 240/240 rows. & pass & Surface, prior and scrambled controls separate action priors or wrong-state fields from the current decisive field. \\
+Only-decisive action-token status & \texttt{only\_decisive\_causal\_field} exposed a visible decisive action matching the scorer target in 240/240 rows; full-state and irrelevant-cue rows did the same by design. & scope & The positive-control claim tests following the current minimal decisive field; it is not an answer-token-free hidden-reasoning claim. \\
+Label wording scope & The prompt contains a generic instruction not to infer hidden expected-action labels, but does not serialize the \texttt{expected\_action} column or scorer target key. & pass & The generic instruction names the evaluation concept; it does not provide the hidden scorer variable. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Scope of validation and execution slice.}
+The formal criteria are interpreted conservatively. No-context and formal-control contrasts support the bounded claim that measured finite-action performance depended on structured state information in the tested agent protocol. Strict entropy and strict token/compute criteria that were not satisfied in the original formal slices are reported as limitations rather than post hoc passes. The local Qwen2.5-1.5B forced-budget audit is a separate bounded pass under exact prompt padding and fixed generation length. The SWE-bench Lite result is a full 300-record issue-to-file localization validation; patch application and test-suite execution were evaluated only in an exploratory slice. That frozen 50-record slice included official harness outcomes for two selected models, with 1/100 selected-model rows resolved and an inconclusive association gate. A later v3 apply-check/repair filter retained 8/100 locally applicable selected-model patches, eliminated harness errors on that filtered subset, and resolved 0/8. These outcomes define the scope of the localization result. The counterfactual-transform quality-control screen separates transform-quality rows from the consistency-passing deterministic transform used as robustness evidence.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
+
+
+
+
+
+
