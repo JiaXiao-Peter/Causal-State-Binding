@@ -1,4 +1,4 @@
-# Causal State Binding for Language Agents
+﻿# Causal State Binding for Language Agents
 
 This repository contains the AI Open submission release for:
 
@@ -72,12 +72,11 @@ directory.
 ## Data and Code Availability
 
 This GitHub repository can be cited as the public code and compact source-data
-release for the AI Open submission. A versioned Zenodo archive/DOI should be
-created from this repository before final submission if the journal requires a
-permanent archival identifier.
+release for the AI Open submission. A versioned DOI should be created from this repository before final submission if the journal requires a permanent archival identifier.
 
 ## License
 
 Code is released under the MIT License. Figure source data, tables, and
 manuscript-adjacent research artifacts are released under CC BY 4.0 unless a
 journal or third-party dataset policy imposes a narrower condition.
+
