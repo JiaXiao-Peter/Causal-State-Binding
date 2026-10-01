@@ -7,18 +7,18 @@
   "files": [
     {
       "path": "manuscript/main_ai_open_author.pdf",
-      "bytes": 1310459,
-      "sha256": "3481d9ba68f2092f0546b591941ebf3da9beb83bd9267f177cb9adfda20a88d4"
+      "bytes": 1310690,
+      "sha256": "bb5e04244c366801b6ea0d904e9eb37e86c8d2a1d93fd574d2a1e37bffc6dbc6"
     },
     {
       "path": "manuscript/supplementary_information_ai_open.pdf",
       "bytes": 1652992,
-      "sha256": "7ae32180bf2d4ed60aeefd9795a496f7e34361a4d6defffd6c1550af0f441cf9"
+      "sha256": "8642f061ba28a28fab67813b1e13f648b5ce388d88e3d9c56bce8f80b505eae5"
     },
     {
       "path": "manuscript/source.zip",
-      "bytes": 2824523,
-      "sha256": "60f2258ab74ab09af023334e1a02718e161db73cb1944a289b06704ac6f03bd4"
+      "bytes": 2824480,
+      "sha256": "447e5662d4dd55bc75bb82dd3d5a32fd680d0589a56c96a4eb69f0e5ffe929ed"
     },
     {
       "path": "research/CSB_research_materials_20261001.zip",
@@ -26,5 +26,6 @@
       "sha256": "b14ac70de5abf20202e5144fc95e341a41e36fbd4cff78c07656710f5e0194e1"
     }
   ],
-  "data_scope": "Analysis-ready research materials; original scientific roles and registered comparisons retained."
+  "data_scope": "Analysis-ready research materials; original scientific roles and registered comparisons retained.",
+  "bibliography_correction": "Reflexion and AgentBench author metadata verified against primary records, 1 October 2026."
 }
