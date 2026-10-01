@@ -1,0 +1,14 @@
+status: registered_pending_execution
+default_candidates:
+- Qwen2.5-or-Qwen3-Instruct
+- Llama-3.x-Instruct
+- Mistral-Instruct
+smoke:
+  events_per_dataset: 20
+  variants:
+  - A4
+  - A5
+  - A4_no_reason
+  - A4_no_veto
+  replicates: 2
+gate: A4 behavioral composite > A5 in at least 5/7 datasets and parse failure < 5%

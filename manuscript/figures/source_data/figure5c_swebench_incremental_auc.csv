@@ -1,3 +1,0 @@
-condition,outcome,auc,delta_auc,delta_auc_ci_low,delta_auc_ci_high,issue_records,api_models,task_rows
-Full non-CSB baseline,task_only_implementation_file_hit_at3,0.7317857309941521,0.18318035087719287,0.09509016948358684,0.1618364761693224,300,6,18000
-Baseline + CSB,task_only_implementation_file_hit_at3,0.914966081871345,0.18318035087719287,0.09509016948358684,0.1618364761693224,300,6,18000

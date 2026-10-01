@@ -1,9 +1,0 @@
-item,value,note,fill_status
-leave_one_repository,12/12,positive primary delta-AUC sensitivities,pass
-leave_one_model,6/6,positive primary delta-AUC sensitivities,pass
-within_model,6/6,positive primary delta-AUC slices,pass
-within_repository,7/9,positive primary delta-AUC slices,boundary
-secondary_no_violation_delta_auc,+0.049,task-only hard-constraint no-violation,secondary
-composite_clean_delta_auc,+0.209,task-only constraint-clean hit@3,secondary
-guard_delta_violation,-0.166,task-only hard violations,secondary
-guard_delta_hit_at3,-0.077,primary hit@3 change; wrapper not used as primary evidence,needs_review

@@ -1,0 +1,497 @@
+﻿\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\pdfminorversion=7
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\biboptions{round,authoryear}
+\journal{AI Open}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+}
+\newcommand{\reviewarchiveurl}{\url{https://github.com/JiaXiao-Peter/Causal-State-Binding}}
+\newcommand{\reviewarchivestatus}{public GitHub code and compact source-data release; archive a versioned DOI before final publication if required}
+\setlength{\emergencystretch}{3em}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{12pt plus 1fil}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+\begin{document}
+\begin{frontmatter}
+
+\title{Causal State Binding: An Intervention-Based Evaluation Framework for Language Agents}
+
+\author[aff1]{Xiao Jia\corref{cor1}\fnref{orcid1}}
+\ead{xiaojia@link.cuhk.edu.cn}
+\ead[url]{https://orcid.org/0009-0006-7711-4067}
+\cortext[cor1]{Corresponding author.}
+\fntext[orcid1]{ORCID: 0009-0006-7711-4067.}
+\address[aff1]{School of Artificial Intelligence, The Chinese University of Hong Kong, Shenzhen, 2001 Longxiang Avenue, Longgang District, Shenzhen, Guangdong 518172, China}
+\begin{abstract}
+Autonomous language agents increasingly expose traces, memories, plans and constraints, but existing evaluations rarely test whether these state variables are causally bound to final actions. We introduce causal state binding: an intervention-coupled evaluation framework that measures whether actions change with the event-specific decisive state while remaining invariant to irrelevant cues. The primary readout is a hidden-target finite-action benchmark in which scorer-side intervention targets are assigned before generation and withheld from the model-visible prompt. Across 57,816 scored records in seven corpus-level units, with primary inference at the dataset-unit level, the structured-agent condition exceeded high-randomness controls and targeted component removals on reason, memory, veto and self-continuity responsiveness. Open-weight validation across four open-weight model instances spanning two model families, Qwen2.5 7B/14B/32B and Mistral-7B, showed that action priors, no-field prompts and scrambled decisive context did not recover the structured-control signature; a strict target-lesion slice identified an operational information boundary in the tested Qwen2.5-32B protocol. Across 300 SWE-bench Lite issue records and six API models, 18,000 condition/repeat rows were aggregated to 1,800 model-issue records for the primary AUC analysis; adding a causal state-binding diagnostic composite to a gold-free non-CSB baseline increased task-only implementation-file hit@3 AUC from 0.732 to 0.915 (\(\Delta\)AUC 0.183; issue-cluster lower 95\% bound 0.095). Secondary analyses separately evaluated task-only hard-constraint violations and constraint-clean hit@3. The SWE-bench analysis evaluates the upstream issue-to-file localization endpoint rather than patch application or test-suite resolution. Auxiliary audits define reporting-format, entropy and calibration boundaries. These results support a positive measurement principle for agent evaluation: action control is predicted by event-specific state--action binding, not by output entropy, action-prior matching or rationale format alone.
+\end{abstract}
+
+\begin{keyword}
+language agents \sep agent evaluation \sep state-action binding \sep causal interventions \sep reliability \sep SWE-bench
+\end{keyword}
+
+\end{frontmatter}
+\sloppy
+
+\section{Introduction}
+
+Language agents increasingly expose internal state variables that look action-relevant: reasoning traces, episodic or reflective memory, planning records, self-state summaries and constraint or veto records. Existing agent architectures already show that such components can improve task behavior \citep{wei2022cot,yao2023react,shinn2023reflexion,yao2023tot,park2023generative,wang2024voyager}. The open evaluation problem is therefore not whether modules can affect behavior in general. The harder gap is measurement: how can an evaluator tell whether a final action is bound to the event-specific state that should control it, rather than to a prior, a plausible rationale format or an irrelevant surface cue?
+
+We call this property causal state binding. For an event \(e\), intervention variable \(z\), and finite action \(a\), causal state binding asks whether the final action follows the post-intervention target \(y^{+}\) when the decisive state is present, and whether it avoids unnecessary change when only irrelevant cues vary. This is different from sampling many actions, matching an empirical action prior or producing a plausible rationale. Prior work on cognitive control motivates the distinction between variability and context-sensitive action selection \citep{miller2001integrative,logan1984inhibit,aron2014inhibition,shenhav2013expected}; here these ideas are used only as evaluation design motivation, not as evidence of neural homology or human-like cognition.
+
+\paragraph{Interpretation of causal}
+The word causal refers to experimenter-controlled prompt and state interventions paired with scorer-side counterfactual targets. It does not assert that the emitted trace identifies a latent internal mechanism, a psychological state or the causal status of model reasoning. The framework tests whether action records vary with the intervention-relevant state available to the action query under matched controls.
+
+The framework uses three complementary readouts. Hidden-target finite-action probes test whether final choices from a six-action response set follow scorer-side intervention targets that are assigned before generation and hidden from the model-visible prompt. State-lesion controls test whether removing, scrambling or replacing the decisive event-specific state breaks that behavior while preserving surface task structure, action priors or output format. Matched-interface trace analyses test whether reported reason, memory, self-state and veto fields are coupled to final action under a common schema. Entropy analyses are retained as calibration and boundary checks rather than as the object being optimized.
+
+This design turns a broad qualitative question into a measurement problem. The central quantity is not whether a model can generate diverse outputs, but whether event-specific decisive state predicts the final action after controlling for action priors, reporting format, surface context and irrelevant cues. The main empirical tests therefore focus on no-field, scrambled-context, distribution-matched no-context and strict target-lesion controls. Open-weight local validation is emphasized because it makes model, tokenizer, generation and hardware records more inspectable than provider-only API runs; API validation is used as external robustness evidence.
+
+The contribution is a benchmark-style protocol and evidence chain for measuring intervention-coupled action control in language agents. The paper does not claim model agency, human-like cognition, a causal status of reasoning or broad strict entropy/token matching across all provider and model settings. It instead asks a narrower positive question: can we identify when action selection depends on the decisive state field rather than on output entropy, action priors or rationale format alone?
+
+The evidence is organized accordingly. The finite-action benchmark defines the measurement paradigm. Open-weight no-context, scrambled-context, distribution-matched and strict-lesion controls test the necessity of event-specific decisive state across scaffolds and models, and SWE-bench Lite issue-to-file localization tests whether the resulting state-binding score predicts a real issue-record reliability endpoint. A decisive-field positive-control experiment checks whether an intentionally visible decisive field is followed in the finite-action protocol, and a local control-binding wrapper tests an auditable mitigation for mismatched decisive fields. Matched-interface AFCI analyses serve as auxiliary trace-faithfulness evidence. Formal entropy/token audits and a bounded local forced-budget matching audit define what is and is not established by entropy and compute matching.
+
+\section{Related Work}
+
+This work builds on language-agent architectures that expose intermediate state as part of task execution. Chain-of-thought prompting, ReAct-style reasoning and acting, reflexive memory, tree-structured search, generative-agent memory and open-ended embodied agents all show that traces, plans, memories and feedback records can improve downstream behavior \citep{wei2022cot,yao2023react,shinn2023reflexion,yao2023tot,park2023generative,wang2024voyager}. The present study is not another agent architecture. It asks whether such state is actually bound to final action under controlled interventions.
+
+\subsection{Agent task and environment benchmarks}
+
+Recent agent benchmarks have moved evaluation from static question answering toward interactive task completion. AgentBench evaluates language models as agents across multiple environments and emphasizes multi-turn reasoning, decision making and instruction following \citep{liu2024agentbench}. WebArena makes this shift more concrete by providing self-hosted web environments with realistic tasks across e-commerce, forums, software collaboration and content management \citep{zhou2024webarena}. \(\tau\)-bench focuses on tool-agent-user interaction in policy-governed customer-service domains, where an agent must use APIs while following domain rules over a dynamic conversation \citep{yao2025taubench}. SWE-bench uses real GitHub issues and repository test suites to evaluate whether language models can produce code changes that resolve software-engineering tasks \citep{jimenez2024swebench}.
+
+These benchmarks are important because they define externally meaningful endpoints for language agents: web-task success, policy-constrained tool use, interactive completion and software repair. They also expose a limitation that motivates the present work. A final task score usually does not say whether the action was controlled by the event-specific state that should have mattered. Our SWE-bench Lite analysis therefore uses the issue record as a realistic reliability endpoint but restricts the claim to upstream issue-to-file localization. The causal state-binding tests are complementary: they ask whether decisive state fields, not action priors or surface context alone, predict the final action.
+
+\subsection{Analytical and multidimensional evaluation}
+
+Another line of work expands evaluation beyond a single aggregate score. HELM argues for broad scenario coverage and multiple desiderata, making transparency, robustness, calibration and other dimensions visible rather than collapsing evaluation into one metric \citep{liang2023helm}. AgentBoard adapts this philosophy to multi-turn agents by adding progress-rate, subskill, grounding and trajectory-level diagnostics for partially observable environments \citep{ma2024agentboard}. These frameworks shift the field toward analytical evaluation: they help identify where an agent succeeds or fails, not only whether it solved the final task.
+
+Causal state binding follows the same analytical motivation but targets a different object. Instead of scoring the full trajectory or decomposing task progress, it intervenes on the state/action interface itself. The relevant question is whether final actions change when the decisive reason, memory, veto or persistent-state field changes, and whether they remain stable when only irrelevant cues change. This places the proposed metric between task-level benchmark success and trace-level diagnostics: it is behavioral, because it scores final actions, but it is state-sensitive, because it uses controlled state lesions and hidden scorer-side targets.
+
+\subsection{Reasoning and explanation faithfulness}
+
+A third related area asks whether model explanations faithfully describe the causes of final answers. Chain-of-thought and self-consistency methods improve performance on many tasks \citep{wei2022cot,wang2023selfconsistency}, but free-form reasoning traces are not automatically faithful. Turpin et al. showed that chain-of-thought explanations can rationalize biased answers without reporting the biasing feature that influenced the prediction \citep{turpin2023unfaithful}. Lanham et al. directly intervened on chain-of-thought traces and found that models vary widely in how strongly their answers depend on the stated reasoning \citep{lanham2023faithfulness}. Paul et al. used causal mediation analysis to measure whether intermediate reasoning steps affect final answers and found that models do not reliably use their own reasoning traces \citep{paul2024making}.
+
+The present framework is aligned with this interventionist view but does not treat emitted reasoning as privileged evidence about a model's internal mechanism. The decisive state in our tests is an experimenter-controlled record available to the action query, and the primary outcome is the canonicalized final action. Free-form traces and matched-interface fields are therefore secondary faithfulness evidence. The main claim is narrower: under matched controls, the final action should follow the current decisive state and should fail when that state is removed, scrambled or replaced by an action prior. Prior work on cognitive control motivates the distinction between response variability and context-sensitive selection \citep{miller2001integrative,logan1984inhibit,aron2014inhibition,shenhav2013expected}, but the experiments do not infer human-like cognition, neural homology or the causal status of private model reasoning.
+
+\section{Results}
+
+We first define causal state binding with hidden-target finite-action probes. We then bring forward the two strongest validation tests: open-weight state-boundary controls and a full 300-record SWE-bench Lite issue-to-file localization predictor analysis. Finite-action readouts, matched-interface trace analyses and entropy/token checks are then used to define the scope of the claim.
+
+\subsection{Causal state binding is measured with hidden action targets}
+
+The primary readout is deliberately constrained. Each trial asks the model to emit one member of a six-action response set: choose option A, choose option B, veto, defer, recall a prior commitment or mark the output as invalid/unmapped. The expected action is a scorer-side label determined before generation from the intervention condition and hidden from the model-visible prompt. The key measurement is whether the final action changes in the component-specific direction when the decisive state changes, while remaining stable under irrelevant cues. This hidden-target finite-action probe is the format-independent behavioral test; trace-field coupling and entropy are secondary readouts.
+
+\subsection{Bound state, not action entropy, predicts hidden-target behavior}
+
+The primary behavioral test removes free-form rationale wording from the score. The model emits one of six allowed action codes, and scoring compares the canonicalized final action with a hidden scorer-side target determined before generation. Expected labels were deterministic consequences of the predefined probe manipulation, not labels chosen after observing model outputs. This design separates the semantic content of the prompt from the scorer-side target used to evaluate whether the final action changed in the component-specific direction; the full action ontology is given in the Supplementary Information.
+
+The benchmark used all seven corpus-level units, 120 sampled events per corpus unit where available, six probe conditions, four variants and three replicate indices. After predefined deduplication and inclusion rules, it retained 57,816 scored records, with mapping errors and irrelevant-cue false positives below predefined thresholds. The predefined behavioral-composite criterion was evaluated at the dataset-unit level and was met in 7/7 datasets for the structured agent condition exceeding the high-randomness control. Reason, memory, veto and self-continuity scores were also diagnostic. Component-specific criteria were met in 7/7 datasets: the structured agent condition exceeded the reason-removal control on reason responsiveness, the veto-removal control on veto responsiveness, and the high-randomness control on memory and self-continuity responsiveness. The corresponding formal scores were \(B_{\mathrm{RSI}}\), \(B_{\mathrm{VEI}}\), \(B_{\mathrm{MCI}}\) and \(B_{\mathrm{SCI}}\). The primary uncertainty summaries used corpus-level units as clusters; the dataset-cluster bootstrap lower 95\% bound was 0.8557, and the smallest dataset-level contrasts were 0.832, 0.964 and 0.992 for the behavioral-composite, reason-ablation and veto-ablation contrasts. Figure~\ref{fig:finite_action_behavior} summarizes these scores, contrasts, condition responses and action-mapping quality.
+
+Formal definitions of these finite-action scores are given below for reproducibility; the main behavioral criterion depends only on whether the canonicalized final action matches a hidden scorer-side target.
+Let \(\mathcal{Y}=\{\texttt{ACTION\_A},\texttt{ACTION\_B},\texttt{VETO},\texttt{DEFER},\texttt{RECALL\_PRIOR},\texttt{INVALID\_OR\_UNMAPPED}\}\) be the finite action-code ontology. The canonicalizer \(g\) maps the raw model output \(o_i\) to \(\hat{y}_i=g(o_i)\in\mathcal{Y}\). For each probe record \(i\), \(y_i^{-}\) denotes the scorer-side expected action before the manipulation and \(y_i^{+}\) denotes the scorer-side expected action after the manipulation. Correct behavior and unnecessary change were scored as
+\begin{align}
+c_i &= \mathbf{1}\{\hat{y}_i=y_i^{+}\},\\
+u_i &= \mathbf{1}\{z_i=\mathrm{irrelevant}\}\mathbf{1}\{\hat{y}_i\neq y_i^{-}\},
+\end{align}
+where \(z_i\) indexes the probe condition. For component \(k\in\{\mathrm{RSI},\mathrm{MCI},\mathrm{VEI},\mathrm{SCI}\}\), the behavioral component score is the target-minus-irrelevant contrast
+\begin{equation}
+B_k(v)=\widehat{\Pr}(c_i=1\mid z_i\in\mathcal{T}_k,v)-\widehat{\Pr}(u_i=1\mid z_i\in\mathcal{N}_k,v),
+\end{equation}
+where \(\mathcal{T}_k\) is the predefined target-probe set for component \(k\) and \(\mathcal{N}_k\) is the predefined irrelevant or placebo-probe set. This formulation makes the behavioral criterion independent of free-form trace wording: only the post-generation canonical action code is compared with hidden scorer-side labels.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/main/figure1_finite_action_behavior.display.png}
+\caption{Finite-action probes test whether action choices follow hidden intervention targets rather than free-form rationales. \textbf{a}, Dataset-level primary behavioral contrasts. Points are dataset units; diamonds and horizontal segments show descriptive means and 95\% intervals; triangles mark leave-one-dataset-out and top-effect-removed summaries, and labels report minimum dataset contrasts and exact one-sided sign-test \(p\)-values. \textbf{b}, Behavioral profile matrix. \(B_{\mathrm{RSI}}\), \(B_{\mathrm{MCI}}\), \(B_{\mathrm{VEI}}\) and \(B_{\mathrm{SCI}}\) denote behavior-level reason, memory, veto and self-continuity component scores; rings mark the expected lesion-sensitive reductions. \textbf{c}, Probe-condition response matrix under the finite experimental action alphabet. Tiles show weighted condition means; embedded dots show the underlying dataset/replicate condition cells. \textbf{d}, Mapping and specificity error-rate summary for unmapped actions and irrelevant-cue false positives; the shaded band marks the low-rate region. Expected labels were scorer-side annotations hidden from the model-visible prompt.}
+\label{fig:finite_action_behavior}
+\end{figure}
+
+The behavior figure reports the result at the dataset-unit level and shows condition-specific responses and mapping quality. Extended Data Figure 3 shows the complete condition-by-dataset response matrix for the finite-action-code benchmark. In this framing, \(B_{\mathrm{RSI}}\), \(B_{\mathrm{MCI}}\), \(B_{\mathrm{VEI}}\) and \(B_{\mathrm{SCI}}\) are component-level causal-state-binding scores: they estimate whether actions follow decisive reason, memory, veto and self-continuity state while resisting irrelevant-cue changes.
+\FloatBarrier
+
+\subsection{State-boundary controls predict issue-record localization}
+
+The strongest test of the framework is not whether a random comparator fails, but whether controls that preserve action format, action priors or surface context fail when the event-specific decisive state is removed or broken. Open-weight validation used four open-weight model instances spanning two model families: Qwen2.5-7B-Instruct, Qwen2.5-14B-Instruct, Qwen2.5-32B-Instruct and Mistral-7B-Instruct-v0.3. Each model contributed 126,000 scored generations over three scaffolds, 20 task families, seven variants and three seeds. The control set separated different alternatives to causal state binding: no-fields controls removed structured state fields, scrambled-context controls paired the action query with decisive context from a different event, and distribution-matched offline/no-context controls sampled from the structured variant's empirical action prior without observing the decisive intervention context.
+
+Across this open-weight matrix, structured accuracy exceeded distribution-matched offline/no-context controls in 236/240 model--scaffold--task-family cells, scrambled-context controls in 240/240 cells and no-fields controls in 238/240 cells. The mean deltas were 0.593, 0.895 and 0.550, respectively. A stricter Qwen2.5-32B target-lesion slice then removed the decisive intervention-carrying field while preserving non-decisive context and the action ontology; structured accuracy exceeded the strict lesion in 60/60 cells, with structured mean 0.998, strict-lesion mean 0.037 and mean delta 0.961. These controls identify an operational information boundary for the action-control signature in the tested Qwen2.5-32B protocol (Figure~\ref{fig:robustness_validation}a,b).
+
+We then ran a SWE-bench Lite issue-to-file localization validation using all 300 retained test issue records and six provider-served model identifiers. Model-visible state was constructed from issue-visible and repository-visible information, including the problem statement, repository file tree, fixed retrieval candidates and prompt-visible localization state. Benchmark reference implementation files were withheld from prompts and used after generation to score outcomes and diagnostic readouts. The primary outcome was ordinary task-only implementation-file hit@3, computed only from the raw task-only and self-consistency calls. The run produced 18,000 condition/repeat rows, which were aggregated to 1,800 model--issue records for the primary AUC analysis. On these records, a gold-free full non-CSB baseline using model identity, repository, retrieved-candidate count, issue length, action entropy, self-consistency vote margin, rationale length and confidence achieved AUC 0.732. Adding the causal state-binding diagnostic composite increased AUC to 0.915 (\(\Delta\)AUC 0.183; issue-cluster bootstrap lower 95\% bound 0.095). The gain was positive in 12/12 leave-one-repository and 6/6 leave-one-model analyses, with positive within-model sensitivity in 6/6 models and within-repository sensitivity in 7/9 estimable repositories. Secondary analyses evaluated task-only hard-constraint no-violation (baseline AUC 0.844, augmented AUC 0.893) and task-only constraint-clean hit@3 (baseline AUC 0.711, augmented AUC 0.920). A separate binding-guard arm reduced task-only hard-constraint violations by 0.166 but reduced primary hit@3 by 0.077, so it is reported as a secondary guardrail diagnostic rather than as primary reliability evidence. These results support issue-to-file localization prediction for SWE-bench Lite issue records; patch generation and test-suite resolution are evaluated separately as exploratory scope checks (Figure~\ref{fig:robustness_validation}c--e).
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/main/figure5_robustness_validation.display.png}
+\caption{Primary validation evidence for state-boundary control and issue-record localization. \textbf{a}, Four-model open-weight core controls. Bars show mean structured-control accuracy deltas for Qwen2.5 7B, 14B and 32B plus Mistral-7B across 20 task families and three scaffolds; labels report positive model--scaffold--task cells and the lowest model-, scaffold- or task-family-cluster lower 95\% bound. \textbf{b}, Open-weight state-boundary lesion analysis. Ordinary target lesions are retained as boundary conditions, whereas the Qwen2.5-32B strict lesion satisfied the predefined cell-level criterion and identified an operational information boundary in the tested protocol. \textbf{c}, Full 300-record SWE-bench Lite issue-to-file predictor test. Adding the causal state-binding diagnostic composite to a gold-free full non-CSB baseline increased task-only implementation-file hit@3 AUC from 0.732 to 0.915. \textbf{d}, Single-predictor AUC comparison for the same primary issue-to-file outcome; the primary claim uses the incremental baseline-plus-CSB test in panel c. \textbf{e}, Issue-cluster sensitivity and secondary guardrail summary, including leave-one-repository/model checks, task-only hard-constraint no-violation and constraint-clean hit@3 analyses. Panels c--e evaluate localization of implementation files from SWE-bench Lite issue records; patch generation and test-suite execution are outside this analysis.}
+\label{fig:robustness_validation}
+\end{figure}
+\FloatBarrier
+
+\begin{table}[!htbp]
+\centering
+\caption{Claim ledger: supported claims and excluded claims. Auxiliary counterfactual-transform, formal API and blinded-audit controls are reported in the Supplementary Information.}
+\label{tab:validation_interpretation}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.20\textwidth}p{0.34\textwidth}p{0.22\textwidth}p{0.18\textwidth}}
+\toprule
+Evidence block & Primary result & Supported claim & Excluded inference \\
+\midrule
+Open-weight state-boundary controls & Across Qwen2.5 7B/14B/32B plus Mistral-7B, structured accuracy exceeded no-fields, scrambled-context and distribution-matched controls in 238/240, 240/240 and 236/240 cells; the Qwen2.5-32B strict target-lesion slice passed in 60/60 cells with mean delta 0.961. & Primary model-family and information-boundary validation evidence for the tested finite-action protocols. & Scope: measured finite-action protocols, not model agency, latent reasoning mechanisms or universal generalization to all agent architectures. \\
+SWE-bench Lite issue-to-file validation & Across 300 issue records and six API models, 18,000 condition/repeat rows were aggregated to 1,800 model--issue records; adding CSB to a gold-free full non-CSB baseline increased task-only implementation-file hit@3 AUC from 0.732 to 0.915. & Issue-to-file localization predictor evidence using oracle-free model-visible state. & Scope: upstream localization; excludes patch generation, issue resolution, broad software repair and deployed-agent task execution. \\
+Decisive-field positive control and wrapper & In 1,440 API generations, full-state and only-decisive-field accuracy were both 1.000, while the best non-decisive control was 0.208; the local wrapper reduced scrambled-field following to 0.033 in both models. & Positive-control and wrapper sanity-check evidence within finite-action probes. & Scope: the decisive field is intentionally visible; excludes unconstrained reasoning and real-environment task execution. \\
+Local forced-budget entropy/token audit & In a bounded Qwen2.5-1.5B CPU run, prompt and completion tokens matched exactly by event, total-token ratio was 1.000, latency ratio was 0.997 and structured accuracy was 0.900 versus 0.325 for the action-prior/no-state control. & Bounded local strict-matching pass under exact local prompt and generation budgets. & Does not convert the larger formal API/open-weight entropy or token/compute attempts into strict matches. \\
+\bottomrule
+\end{tabular}% 
+}
+\end{table}
+
+Conservative derived effect-size summaries are provided in the Extended Data source figures and in the Figure~\ref{fig:robustness_validation} source-data files. These summaries aggregate the existing evidence blocks at the most conservative dataset-level, model--scaffold--task or reference-model scale available for each comparison. Extended Data Figures 5--8 provide the auxiliary cross-model, open-weight, audit, conservative effect-size, proxy compute and interface-diagnostic displays. The validation source-data map links claim-supporting figures and tables to source-data files, analysis entry points and SHA-256 prefixes, so the claim ledger can be audited from the public GitHub code and compact source-data release.
+\FloatBarrier
+
+\subsection{Decisive-field positive control and wrapper sanity check}
+
+Necessity controls show that the finite-action binding readout fails when decisive state is removed or broken. We next ran a narrower positive control with a five-condition causal-state experiment. For each event, the model received either the full state, only the decisive causal field, surface context only, an action-prior-only prompt or a scrambled decisive field from another event; an additional irrelevant-cue condition tested whether an irrelevant surface suggestion changed the action. The experiment used \texttt{gpt-5.4-mini} and \texttt{qwen3-max}, 20 task families, six held-out events per family, six conditions and 1,440 fallback-free API generations with zero parse or transport errors.
+
+Within these intentionally diagnostic finite-action probes, the decisive-field positive control recovered the prescribed action pattern. For both models, full-state accuracy was 1.000 and only-decisive-field accuracy was also 1.000. The only-decisive condition explicitly exposed the current event's minimal action-relevant field while omitting surface context; it therefore tests whether the action selector follows the current visible decisive field rather than a surface cue, action prior or scrambled field. The best non-decisive control was the action-prior-only condition at 0.208; surface-context-only accuracy was 0.033, and scrambled-decisive-field accuracy was 0.008 for \texttt{gpt-5.4-mini} and 0.017 for \texttt{qwen3-max}. Because the decisive field is intentionally visible and action-code-bearing, this experiment is interpreted as a positive control and wrapper sanity check, not as an unconstrained hidden-reasoning result. Detailed condition tables and leakage audits are reported in the Supplementary Information.
+
+We also tested a local control-binding wrapper on the same records. Before accepting a final action, the wrapper checked whether the visible decisive field belonged to the current event and whether the action matched that field; if a decisive field came from a different event, the wrapper deferred rather than binding to the mismatched field. This wrapper added no second model call. It preserved irrelevant-cue accuracy at 1.000 for both models and reduced acceptance of scrambled decisive fields: raw outputs followed the scrambled field in 0.958 of \texttt{gpt-5.4-mini} rows and 0.533 of \texttt{qwen3-max} rows, whereas wrapped outputs followed the scrambled field in 0.033 of rows for both models. The result establishes a finite-action guardrail over the intervention records; real-environment localization and task-execution effects require separate evaluation.
+
+\subsection{Entropy analyses serve as calibration and boundary checks}
+
+After establishing the state-binding readout, entropy analyses were used only to test an alternative explanation: whether output dispersion or stochastic opportunity could recover the same control profile. In the baseline lesion matrix, higher randomness increased action entropy but did not recover reason-, memory-, self-state- or veto-coupled behavior.
+
+Across seven corpora spanning narrative, self-continuity, choice, uncertainty and recall settings, increasing stochasticity raised action entropy but did not reproduce structured-control readouts. In the 74,352-call baseline lesion matrix, the high-randomness control was more unpredictable than the structured agent condition in 7/7 datasets, whereas the structured condition's self-continuity index exceeded the comparator's in 5/7 datasets. Removing the reason graph reduced reason-sensitive structure in 7/7 datasets, and removing veto reduced veto-sensitive structure in 7/7 datasets. This pattern separates action dispersion from control coupling within the measured protocol.
+
+Figure~\ref{fig:baseline_dissociation} visualizes this alternative-explanation check. Entropy was computed over final actions, whereas the structured-control composite summarizes self-continuity, reason sensitivity, veto effect and action continuity; Methods and the Supplementary Information provide the formal definitions. Separate strict entropy and token/compute attempts did not satisfy their registered closeness criteria. No retained calibration candidate matched the structured-control variant across raw-string, rule-canonical, semantic-cluster and action-family entropy representations; the smallest observed maximum gap was 1.171 against the 0.15 criterion. These diagnostics are therefore interpreted as calibration boundaries rather than as entropy-matched controls, with the detailed threshold-normalized analysis reported in Extended Data Figure 4 and the source-data tables.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/main/figure2_baseline_dissociation.display.png}
+\caption{High-randomness sampling increases output entropy without reproducing the structured-control profile. \textbf{a}, Each vector shows how replacing the structured agent condition with a control condition changes output entropy and structured-control readouts. The standardized-space axes are raw action unpredictability and the mean of SCI, RSI, VEI and ACI; thin grey vectors show dataset-replicate units; dotted ellipses and marginal rugs show the dataset-replicate distribution; thick labelled vectors show mean displacement. \textbf{b}, Component readout matrix for SCI, RSI, VEI, ACI and raw unpredictability. Colour reports metric-wise \(z\)-score; overlaid dots show dataset-level means. \textbf{c}, Dataset-level contrast forest plot for the predefined baseline directions. Points are dataset units; diamonds and horizontal segments show descriptive means and 95\% intervals across dataset units; the shaded region marks the expected positive direction. \textbf{d}, Signed evidence strip showing direction and magnitude for each dataset-level contrast.}
+\label{fig:baseline_dissociation}
+\end{figure}
+
+The baseline visualization therefore summarizes the calibration boundary: output variability rises in the high-randomness control, whereas state-binding readouts remain concentrated in the structured-control variant and its targeted lesion contrasts. Extended Data Figure 1 provides the full dataset- and replicate-resolved baseline metric map supporting this summary display.
+\FloatBarrier
+
+\subsection{Matched-interface traces provide auxiliary faithfulness evidence}
+
+All matched-interface variants used the same reporting schema. The test therefore asks whether the availability of fields such as reason, memory, self-state and veto is enough, or whether those fields must be coupled to final action. The common schema also included the initial impulse, candidate actions, final action, rationale and provenance.
+
+We call this trace-action coupling, measured here with the action-field coupling index (AFCI). The structured matched-interface variant exceeded seven predefined control comparators on AFCI in all seven datasets: HS plain, HS random fields, HS post-hoc fields, HS scrambled fields, SC post-hoc fields, SC scrambled fields and HS long scratchpad. The dataset-cluster bootstrap lower 95\% bound for the AFCI difference was 0.4519. The compressed structured variant was analysed separately as a positive sensitivity control and was not part of the negative-control set. Because the scorer tracks whether reports were random, post-hoc or scrambled, AFCI measures coupling rather than reporting-format availability alone (Figure~\ref{fig:matched_interface_afci}).
+
+For scored generation \(i\), AFCI decomposed the matched-interface trace into four bounded coupling terms:
+\begin{equation}
+\mathrm{AFCI}_{i,v}=\frac{1}{4}\left(R_{i,v}+M_{i,v}+Q_{i,v}+S_{i,v}\right),
+\end{equation}
+where \(R_{i,v}\) denotes reason-action alignment, \(M_{i,v}\) memory-action alignment, \(Q_{i,v}\) veto-action alignment and \(S_{i,v}\) self-state/action alignment. Each term is a protocol-level score on \([0,1]\) computed from the emitted trace information, final action and predefined provenance information under the common schema. This design makes AFCI appropriate as a matched-format coupling readout, while leaving the finite-action-code benchmark to provide the primary format-independent behavioral test. For compact notation, \(\mathrm{SC\_full}\) denotes the structured matched-interface variant. For a comparator \(q\), the dataset-level AFCI contrast was
+\begin{equation}
+\Delta_d(q)=\frac{1}{|\mathcal{I}_{d,\mathrm{SC\_full}}|}\sum_{i\in\mathcal{I}_{d,\mathrm{SC\_full}}}\mathrm{AFCI}_{i,\mathrm{SC\_full}}
+-\frac{1}{|\mathcal{I}_{d,q}|}\sum_{i\in\mathcal{I}_{d,q}}\mathrm{AFCI}_{i,q}.
+\end{equation}
+The reported lower 95\% bound is the 2.5th percentile of a dataset-cluster bootstrap distribution over \(\Delta_d(q)\), following the standard non-parametric bootstrap logic for clustered empirical summaries \citep{efron1993bootstrap}.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figures/main/figure3_matched_interface_afci.display.png}
+\caption{Matched reporting formats do not by themselves produce trace-action coupling. The action-field coupling index (AFCI) tests whether emitted reason, memory, self-state and veto information is coupled to final action under a common schema. \textbf{a}, Predefined control-comparator contrasts with dataset points, mean intervals, minimum contrasts and reference bands. The seven control comparators are enumerated by exact protocol identifier in Methods and the Supplementary registry. \textbf{b}, AFCI distributions across dataset-replicate units, with density envelopes, raw points and mean intervals. The compressed structured variant is shown as a positive sensitivity comparison excluded from the predefined control-comparator set. \textbf{c}, AFCI component decomposition into reason-action, memory-action, veto-action, self-action and composite terms; the ring marks the sparse self-action term for the structured matched-interface variant. \textbf{d}, Dataset-wise structured--compressed differences; the shaded band marks a \(\pm 0.02\) near-equivalence region. The AFCI panels summarize action-field coupling under the common schema.}
+\label{fig:matched_interface_afci}
+\end{figure}
+
+The AFCI component pattern constrains interpretation and prevents overinterpreting the composite. The structured matched-interface variant had reason-action and memory-action alignment near 0.5, veto-action alignment near 1.0 and a sparse self-action alignment term near 0.003. This pattern is compatible with the high finite-action-code behavioral self-continuity score, \(B_{\mathrm{SCI}}\), because the two quantities operationalize different levels of control: the AFCI self term measures sparse trace/action coupling, whereas the behavioral self-continuity probes test whether the final action code remains stable under the predefined self-continuity manipulation and irrelevant-cue controls. The composite AFCI is therefore interpreted together with its component terms. Extended Data Figure 2 gives the full dataset- and replicate-resolved AFCI profile.
+\FloatBarrier
+
+\subsection{External API, perturbation and audit robustness}
+
+After the open-weight state-lesion tests, additional validation blocks tested whether the binding signature was brittle to prompt wording, perturbation design, provider interface or scorer awareness. Prompt paraphrases, expanded counterfactual probes and placebo-component manipulations preserved the direction of the result within the tested scope. The perturbation set covered reason flips, reason-strength gradients, memory conflict, irrelevant memory, veto cues, late veto cues, self-continuity probes, placebo cues and adversarial-randomness cues. In the formal holdout, prompt paraphrasing remained within the registered tolerance for structured accuracy. The deterministic counterfactual-transform audit used a text--label consistency screen: candidate rows with visible label-context contradictions were retained as transform-quality boundary rows, and the consistency-passing transform regenerated the decisive context and hidden expected action together. The consistency-passing transform satisfied the predefined criterion across 120/120 scaffold--family cells, with mean structured accuracy 1.000.
+
+The independent Mistral-7B family reproduced the three core no-context controls in 60/60 cells each, and the Qwen2.5 size series preserved the no-field, scrambled-context and distribution-matched control separations across 7B, 14B and 32B settings.
+
+Targeted lesions were more diagnostic as boundary conditions. Ordinary target lesions were positive on average across the four-model matrix but weaker than the core no-context controls (193/240 positive cells; mean delta 0.041), and therefore are not interpreted as a universal collapse test. A stricter Qwen2.5-32B lesion slice removed the decisive intervention context more completely and produced 28,800 additional scored generations: structured accuracy exceeded the strict lesion in 60/60 cells, with structured mean 0.998, strict-lesion mean 0.037 and mean delta 0.961. Thus the ordinary 32B target-lesion weakness is treated as a lesion-design boundary condition, whereas the strict slice supports the narrower claim that removing decisive intervention context collapses the 32B action-control signature.
+
+A formal control-audit slice added token-prompt and entropy-token control variants for the Qwen open-weight models and retained tokenizer and compute-proxy metadata. The main formal slice completed 63,360 planned rows with no duplicate analysis keys and a 0.140\% parse/error rate, and structured accuracy exceeded the no-fields, scrambled-context, distribution-matched, strict-lesion and formal control variants in the relevant scaffold--task-family cells. A 17,280-row token-prompt slice aligned the prompt-token count for the entropy-token variant, but total-token ratios and latency proxies remained outside the strict token/compute criterion. An entropy-prior no-field behavioral control used a calibration-frozen final-action prior and completed 24,480 planned rows with no duplicate keys and a 0.102\% parse/error rate. It remained behaviorally below the structured-control variant in 120/120 cells (mean delta 0.660), but the registered \(\leq 0.10\)-bit strict entropy-gap criterion was satisfied in only 1/6 model--scaffold cells. The interpretation is therefore limited to token-prompt controls with compute audit and an entropy-prior behavioral control, not strict compute or strict entropy matching.
+
+A separate local forced-budget audit addressed the narrower question of whether the state-binding separation survives when prompt length, completion length, total-token count, latency and canonical-action entropy are simultaneously matched in an inspectable open-weight run. Using cached local Qwen2.5-1.5B-Instruct CPU inference over 20 task families and two events per family, prompts were padded to exact tokenizer equality by event and generation length was fixed. The audit passed its local gate: prompt-token match rate 1.000, completion-token match rate 1.000, total-token ratio 1.000, latency ratio 0.997 and canonical-action entropy gap 0.020 bits. Under those matched conditions, structured-state accuracy was 0.900, whereas the distribution-matched action-prior/no-state control was 0.325. This is a bounded forced-budget result, not a replacement for the failed original formal strict gates across larger open-weight and provider-served runs.
+
+The cross-model subset used four externally served model identifiers recorded as provider-reported identifiers at run time: \texttt{gpt-5.4-mini}, \texttt{gpt-4.1-mini}, \texttt{deepseek-chat} and \texttt{gemini-2.5-flash}. Each model showed the structured-control variant exceeding the high-stochasticity comparator in 7/7 dataset units. The formal API validation slice used provider-reported run-time identifiers \texttt{gpt-5.4-mini}, \texttt{gemini-3.1-flash-lite-preview}, \texttt{deepseek-v3.2} and \texttt{qwen3-max}, completing 14,400 planned rows and 11,520 fallback-free remote calls, with zero unrecovered generations and one parse/action error record. Structured accuracy exceeded the no-fields, scrambled-context, distribution-matched and strict-lesion controls in 238/240, 240/240, 240/240 and 240/240 cells, respectively; all cluster-bootstrap lower 95\% bounds were positive. The blinded audit expanded to 1,200 full-overlap items scored by three annotators, with variant identity withheld \citep{cohen1960coefficient}. Core dimensions had 100\% valid scoring, no unscorable items and no violations of the blinding protocol; mean pairwise Cohen's kappa was 0.961, and the lowest non-constant dimension kappa was 0.860. Automated judge scores are retained only as auxiliary consistency summaries, given known position, verbosity and self-enhancement biases \citep{zheng2023judge}. Formal API, calibration and blinded-audit details are retained as Supplementary scope checks. These experiments test robustness of the separation across the tested settings; provider-reported identifiers are retained as run-time identifiers, not theoretical model categories.
+
+\section{Discussion}
+
+This study reframes agent control evaluation as a causal state-binding measurement problem. The central object is whether event-specific decisive state is bound to final action: actions should follow reason, memory, veto and persistent-state interventions while remaining stable under irrelevant cues. Across the tested protocols, this binding score predicted hidden-target action behavior more directly than output entropy, action-prior matching or rationale format.
+
+This matters because modern agents already contain reasoning, memory, planning and constraint-like modules. The question for evaluation is no longer simply whether such modules can improve behavior, but whether a benchmark can distinguish true event-specific state--action binding from surface alternatives. The hidden-target benchmark and open-weight state-lesion controls address that question by testing no-field prompts, scrambled decisive context, distribution-matched no-context action priors and strict target lesions under a common finite-action ontology.
+
+The evidence is hierarchical. The finite-action benchmark defines the measurement paradigm because it removes free-form rationale wording and compares final action codes with hidden scorer-side targets. The open-weight matrix provides the main model-family validation evidence, with four open-weight model instances spanning two model families tested across scaffolds and task families. The strict-lesion slice supplies the clearest information-boundary result: removing the decisive intervention-carrying field collapses the action-control signature in the Qwen2.5-32B setting. Matched-interface AFCI analyses then test trace faithfulness under common schemas, and API validation provides external robustness rather than the primary model-family claim.
+
+The decisive-field positive control adds a sanity check within the finite-action setting. Removing the decisive state collapses action control, whereas exposing the minimal current-event decisive field recovers the prescribed action pattern in the tested API models. Because that field is intentionally visible, this result is not interpreted as hidden-reasoning evidence. The local wrapper result is correspondingly practical: a finite-action guard that checks current-event decisive-field consistency can prevent binding to a scrambled decisive field without adding another model call. This remains a finite-action result, but it turns the metric into an auditable control layer that can be tested in future task environments.
+
+The broader lesson is methodological rather than metaphysical: evaluations of language agents should measure whether decisive state is bound to action, not only whether the system produces diverse outputs, plausible rationales or high task-level performance. A system can match an action prior or emit a fluent reason without selecting actions for the event-specific reason, memory or constraint that should control the decision.
+
+Several limitations define the scope of the result. The claim is protocol-level and concerns measured trace and action records. The finite action ontology is intentionally narrow. The validation experiments cover the tested prompts, scaffolds, open-weight model instances and provider-reported identifiers, not all language agents or all architectures. The original formal entropy calibration did not meet the registered closeness criterion, and the historical token-prompt slice did not satisfy the strict token/compute criterion because total-token ratios and latency proxies remained outside the criterion. The new local forced-budget Qwen2.5-1.5B audit closes that objection only in a bounded CPU-local setting with exact prompt padding and fixed generation length. The constructive wrapper is tested only as a local finite-action guard over the present intervention records. The SWE-bench Lite validation uses real issue records and supports implementation-file localization prediction from oracle-free model-visible state; repository execution, patch application and official test-suite resolution remain outside the primary endpoint. The exploratory execution slice, including a later apply-check/repair filter, is reported as a scope check rather than as evidence for SWE-bench issue resolution. The manuscript does not include full AgentBench, WebArena, OSWorld or SWE-bench task-execution outcomes. The study makes no general claim about model agency, human-like cognition or the causal status of reasoning.
+
+In the tested language-agent protocols, causal state binding provides a measurable action-control signature: final actions track decisive event-specific state and fail when that state is removed, scrambled or replaced by an action prior.
+
+\section{Conclusion}
+
+This study introduces causal state binding as a positive measurement principle for language-agent evaluation. Across the tested finite-action probes, open-weight state-boundary controls, matched-interface traces and SWE-bench Lite issue-record localization analyses, final actions were best explained by event-specific decisive state rather than by output entropy, action-prior matching or rationale format alone.
+
+The conclusion is deliberately bounded. The evidence supports intervention-coupled action-control measurement in the protocols studied here, not a general claim of model agency, human-like cognition or real-environment task execution. Future work should extend the framework to additional execution environments, richer action spaces and preregistered cross-model lesion tests.
+
+\section{Methods}
+
+\subsection{Agent family and lesions}
+
+The agent family was designed to make component lesions explicit. Its variants selectively enable or remove branching, self-state, memory, reason-graph and veto components. The reader-facing names used in Results are aliases for exact protocol identifiers. The structured-control variant corresponds to protocol id \texttt{A4}: branching, self-state, memory, reason and veto are enabled. The high-stochasticity comparator corresponds to protocol id \texttt{A5}: branching and high-temperature sampling are enabled while self-state, memory, reason and veto are disabled. This A4--A5 contrast is an informative baseline but is not treated as the sole evidence for causal state binding because it gives the structured protocol more intervention-relevant information. The primary state-binding controls are the finite-action no-field, scrambled-context, distribution-matched no-context and strict target-lesion contrasts, which isolate whether the event-specific decisive state is available and correctly paired with the action query. The reason and veto lesions correspond to \texttt{A4\_no\_reason} and \texttt{A4\_no\_veto}, respectively. Additional stochastic controls include lower-temperature, compute-control-attempt, self-consistency and empirical entropy-attempt variants. The Supplementary Information registry retains the exact raw protocol identifiers; these identifiers are implementation labels, not established theoretical categories or latent psychological types.
+
+Canonical protocol identifiers are retained where they are needed to reproduce the implemented variant grid. The compact registry below groups the identifiers that recur across evidence blocks; their interpretation is defined by the component settings reported here.
+\begin{center}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Canonical label group & Role & Naming note \\
+\midrule
+\texttt{A4}, \texttt{A5} & primary structured and stochastic variants & baseline lesion and behavior benchmarks \\
+\texttt{A4\_no\_reason}, \texttt{A4\_no\_veto} & targeted structured-control ablations & reason and veto component tests \\
+\texttt{A4\_full}, \texttt{A4\_compressed} & matched-interface positive variants & compressed variant is excluded from the control-comparator set \\
+\texttt{A5\_plain}, \texttt{A5\_schema\_*}, \texttt{A4\_posthoc\_fields}, \texttt{A4\_scrambled\_fields}, \texttt{A5\_long\_scratchpad} & matched-interface control comparators & full names are enumerated in the Supplementary registry \\
+\texttt{A5\_entropy\_attempt}, \texttt{A5\_empirical\_entropy\_attempt} & entropy checks & predefined entropy-closeness criterion unsatisfied \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+
+Each variant can be represented as a protocol component vector
+\begin{equation}
+\mathbf{z}_v=(b_v,s_v,m_v,r_v,q_v,T_v),
+\end{equation}
+where \(b_v\in\{0,1\}\) indicates branching, \(s_v\in\{0,1\}\) self-state, \(m_v\in\{0,1\}\) memory, \(r_v\in\{0,1\}\) reason-graph construction, \(q_v\in\{0,1\}\) veto and \(T_v\) the sampling temperature. The core lesion contrasts hold all non-targeted components fixed as closely as the protocol permits and toggle one component or stochastic setting. Thus \(\texttt{A4\_no\_reason}\) differs from the structured-control protocol id \texttt{A4} by setting \(r_v=0\), \(\texttt{A4\_no\_veto}\) differs by setting \(q_v=0\), and the high-stochasticity protocol id \texttt{A5} differs by disabling \(s_v,m_v,r_v,q_v\) while increasing stochastic sampling.
+
+Each generation produced both a trace record and a behavior record. For reproducibility, the JSON-oriented chat protocol requested the raw keys \texttt{branch\_set}, \texttt{self\_state}, \texttt{reason\_graph}, \texttt{first\_impulse}, \texttt{reason\_update}, \texttt{final\_action}, \texttt{memory\_write}, \texttt{veto\_state}, \texttt{delayed\_recall} and \texttt{stage\_vector}. The model-visible prompt contained the event text, dataset identifier, event granularity, enabled module flags and recent memory. Provider outputs were parsed as JSON and normalized to the registered schema when fields were absent or malformed, with provider-level interface categories retained for reproducibility reporting. The default values were schema-completion values, not positive evidence for trace-action coupling. Table~\ref{tab:default_policy} lists the relevant defaults and the corresponding missing-as-failure sensitivity rule. The matched-interface AFCI run had zero provider failures, so the primary AFCI evidence did not depend on replacing malformed provider payloads. In runs with nonzero parse diagnostics, affected behavioral rows are auditable through the retained error fields, and the missing-as-failure sensitivity assigns zero to affected AFCI terms and treats malformed final actions as invalid or unmapped. The Supplementary Information gives the complete component settings for the agent family.
+
+\begin{table}[!htbp]
+\centering
+\caption{Schema defaults and missing-as-failure handling for trace and action fields. Defaults keep exported records rectangular; they are not interpreted as positive evidence for causal state binding.}
+\label{tab:default_policy}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.18\textwidth}p{0.30\textwidth}p{0.26\textwidth}p{0.20\textwidth}}
+\toprule
+Field group & Default when absent or malformed & Possible effect on AFCI or behavior & Missing-as-failure sensitivity \\
+\midrule
+\texttt{branch\_set}, \texttt{candidate\_actions}, \texttt{first\_impulse} & Registered finite-action list or heuristic branch list; first candidate used as \texttt{first\_impulse}. & Defines a parseable action frame but does not by itself create reason, memory, self or veto coupling evidence. & Rows with malformed candidate frames are flagged; affected AFCI terms are set to zero. \\
+\texttt{final\_action} & String field coerced to the emitted action when valid; invalid or missing action is mapped to \texttt{INVALID\_OR\_UNMAPPED} for finite-action scoring. & Missing or invalid action lowers behavioral matching unless a malformed-output analysis is being reported separately. & Malformed final actions are scored as missing-as-failure, not repaired to a target action. \\
+\texttt{reason\_graph}, \texttt{reason\_update}, rationale text & Empty node list, empty weights and no preferred action unless a registered action-coupled field was generated by the protocol. & Cannot create positive reason-action alignment without registered action-coupled provenance; otherwise lowers or leaves the reason term neutral. & Reason-action AFCI term \(R\) is zero when the reason field is defaulted or provenance is missing. \\
+\texttt{memory\_write}, \texttt{memory\_trace}, \texttt{delayed\_recall} & Empty memory items, empty commitment and source-event metadata retained only when available. & Cannot create positive memory-action alignment without emitted or registered memory content; otherwise lowers the memory term. & Memory-action AFCI term \(M\) is zero when the memory field is defaulted or source provenance is missing. \\
+\texttt{self\_state}, \texttt{stage\_vector} & Identity and continuity weights set to 0, memory depth to 0 and malformed stage vectors replaced by numeric zero/empty vectors. & Does not increase self-continuity or self-action evidence; can only lower the self term relative to an emitted nonzero state. & Self-action AFCI term \(S\) is zero when self-state or stage-vector content is defaulted. \\
+\texttt{veto\_state} & \texttt{applied=false}, strength 0 and no vetoed action unless the emitted or registered field states otherwise. & Can match a non-veto surface case but lowers veto-required cases; this asymmetry is tracked explicitly. & Veto-action AFCI term \(Q\) is zero when veto state is defaulted, including no-veto defaults. \\
+\texttt{module\_metadata} and provenance & Missing/error provenance retained; field-generation source set from the registered protocol only when known. & Missing provenance prevents a field from receiving action-coupling credit. & Any defaulted provenance makes the affected alignment term fail. \\
+\bottomrule
+\end{tabular}% 
+}
+\end{table}
+
+\texttt{A5\_entropy\_attempt} denotes a lower-temperature stochastic attempt, whereas \texttt{A5\_empirical\_entropy\_attempt} denotes the selected temperature/top-p candidate from the empirical calibration analysis; the predefined entropy-closeness criterion was not satisfied for these variants.
+
+\subsection{Prompt corpora and generation protocol}
+
+The study uses seven prompt/event corpora for agent evaluation. Main-text analyses use reader-facing corpus labels; the raw namespaces and export identifiers are retained in the Supplementary Information and in the reproducibility archive. Each corpus contributes text-like event scaffolds rather than positive human neural evidence. Event lists were sampled with stratification over available task, condition, run, episode and subject-like columns when such columns existed; otherwise, events were sampled and then ordered by available dataset, episode, subject, onset and event identifiers. Table~\ref{tab:corpus_labels} summarizes the sources, roles and redistribution status. We use ``replicate index'' for repeated generation runs; deterministic provider-side seed control was not assumed unless explicitly supported by the inference endpoint.
+
+\begin{table}[!htbp]
+\centering
+\caption{Reader-facing prompt-corpus labels used in the main text. Raw namespace strings, exact sampled-event identifiers and export paths are retained in the Supplementary Information and archive.}
+\label{tab:corpus_labels}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.18\textwidth}p{0.13\textwidth}p{0.30\textwidth}p{0.18\textwidth}p{0.15\textwidth}}
+\toprule
+Corpus label & Source/ID & Role & Events & License/status \\
+\midrule
+Narrative agency & narratives\_full & narrative agency and self-context probes & 98 available; 32 frozen source events & license-clean derived prompts \\
+Self-continuity A & ds000210 & persistent-state and self-memory probes & 3,720 available; 32 frozen source events & derived prompts only; raw files excluded \\
+Self-continuity B & ds001618 & independent self-continuity and autobiographical-memory probes & 3,636 available; 32 frozen source events & derived prompts only; raw files excluded \\
+Choice conflict A & ds001882 & reason, value-conflict, agency and veto probes & 4,737 available; 32 frozen source events & derived prompts only; raw files excluded \\
+Choice conflict B & ds000212 & independent reason, agency and veto-pressure probes & 3,584 available; 32 frozen source events & derived prompts only; raw files excluded \\
+Uncertainty/risk & ds004917 & stochastic-boundary and uncertainty probes & 38,195 available; 32 frozen source events & derived prompts only; raw files excluded \\
+Recall/memory & ds004042 & memory-constraint and reconstruction probes & 4,017 available; 32 frozen source events & derived prompts only; raw files excluded \\
+\bottomrule
+\end{tabular}% 
+}
+\end{table}
+
+The baseline lesion matrix used eight variants, three replicate indices and up to 500 sampled events per dataset. The realized analysis comprised 74,352 model queries and 74,336 model generations; 16 generations were unrecovered, for an unrecovered-generation rate of 0.000215. The provider-reported primary model was \texttt{gpt-5.4-mini}; \texttt{qwen3-30b-a3b} was available as the secondary provider setting. Primary trace metrics were raw final-action unpredictability, SCI, RSI, VEI and ACI. Unpredictability was Shannon entropy over final actions. SCI averaged identity and continuity weights in the agent self-state. RSI measured whether a non-empty reason graph was associated with a change from first impulse to final action. VEI measured whether veto was applied. ACI normalized memory depth. The structured composite averaged SCI, RSI, VEI and ACI. These metrics are operational summaries of the trace protocol.
+
+\subsection{Matched-interface action-field coupling controls}
+
+Matched-interface controls required all predefined control comparator variants to use the same schema while changing how the reporting elements were generated or coupled to final action; the compressed structured protocol id \texttt{A4\_compressed} used the same schema as a positive sensitivity variant. The common schema included \texttt{first\_impulse}, \texttt{candidate\_actions}, \texttt{reason\_graph}, \texttt{memory\_trace}, \texttt{self\_state}, \texttt{veto\_state}, \texttt{final\_action}, \texttt{final\_action\_rationale} and a provenance record. The realized experiment comprised 26,946 model generations with zero unrecovered generations. The primary score was the action-field coupling index (AFCI), defined from reason-action, memory-action, veto-action and self-action alignment terms. The AFCI scorer uses emitted content, first impulse, final action and provenance information to penalize post-hoc, scrambled, random or template-generated reporting elements. AFCI is read as a matched-format coupling measure, and the finite-action-code benchmark supplies the format-independent behavioral test.
+
+\subsection{Finite-action-code behavioral benchmark}
+
+The finite-action-code benchmark used a six-code scoring ontology. The model-visible output instruction allowed five substantive codes: \texttt{ACTION\_A}, \texttt{ACTION\_B}, \texttt{VETO}, \texttt{DEFER} and \texttt{RECALL\_PRIOR}. The sixth code, \texttt{INVALID\_OR\_UNMAPPED}, was a scorer-assigned bucket for malformed or unmappable outputs. The model-visible prompt contained task context, probe manipulation, module-lesion rule and allowed action ontology. Expected-action labels were scorer-side annotations and were not included in the model-visible prompt; the model was shown the task context, manipulation and allowed output ontology, but not the hidden post-manipulation target label (\texttt{expected\_action\_after}) used for scoring. Scoring compared the post-generation \texttt{canonical\_action\_code} with that hidden label. The canonicalizer maps explicit option mentions to \texttt{ACTION\_A} or \texttt{ACTION\_B}, stop/withhold/cancel language to \texttt{VETO}, delay language to \texttt{DEFER}, and recall or prior-commitment language to \texttt{RECALL\_PRIOR}; all other outputs are assigned \texttt{INVALID\_OR\_UNMAPPED}.
+
+Table~\ref{tab:finite_prompt_example} gives a shortened, format-preserving example from the actual prompt template. It shows the separation between surface context, decisive state, allowed actions and the hidden target used by the scorer. The benchmark is therefore a controlled finite-action state-binding assay, not an unconstrained natural-language reasoning task: the visible prompt defines the state/action rule and module lesion, whereas the scorer-side target variable remains hidden from the model.
+
+\begin{table}[!htbp]
+\centering
+\caption{Shortened example of a finite-action prompt record. The first three rows are model-visible; the final row is scorer-side only.}
+\label{tab:finite_prompt_example}
+\small
+\begin{tabular}{p{0.24\textwidth}p{0.68\textwidth}}
+\toprule
+Prompt element & Example content \\
+\midrule
+Surface context & Original event text is appended after the benchmark header. In the \texttt{self\_continuity} probe, the surface cue asks for \texttt{ACTION\_B}. \\
+Decisive state & The prompt states that a persistent self-commitment supports \texttt{ACTION\_A}. The Modules line is the lesion rule: if \texttt{self=true}, the persistent commitment can control the action; if \texttt{self=false}, the surface cue controls the action. \\
+Allowed actions & \texttt{ACTION\_A}, \texttt{ACTION\_B}, \texttt{VETO}, \texttt{DEFER} or \texttt{RECALL\_PRIOR}. \\
+Scorer-hidden target & \texttt{expected\_action\_after=ACTION\_A} for the structured self-continuity row; this label is not included in the prompt. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The design specified 58,896 model queries and retained 58,835 model generations with one unrecovered generation. Predefined deduplication and inclusion rules retained one scored row per exact \texttt{dataset/base\_event/condition/variant/replicate} key, collapsing duplicate source-event identifiers and repeated records before inference. The resulting analysis used 57,816 deduplicated scored records. The parse-error rate was \(1.70\times 10^{-5}\), the unmapped-action rate was 0.001297 and the structured-control irrelevant-cue false-positive rate was 0.008302; unmapped actions are outputs that could not be mapped to the finite action alphabet. The predefined evaluation criterion required parse errors below 2\%, unmapped actions below 2\%, structured-control irrelevant-cue false positives below 15\%, structured-control behavioral-composite superiority over the high-stochasticity comparator in at least 6/7 datasets, component-specific structured-control superiority over the relevant ablations in at least 6/7 datasets, and a positive dataset-cluster bootstrap lower bound.
+
+\subsection{Decisive-field positive control and wrapper experiment}
+
+The decisive-field positive-control experiment used the same 20 synthetic open-weight task families and finite four-action ontology used in the API validation controls, but changed the model-visible state available to the action query. For each family, six event indices were evaluated. The five diagnostic conditions were: full state, only the decisive causal field, surface context only, action prior only and scrambled decisive field. A sixth irrelevant-cue condition added a misleading surface cue while preserving the current event's decisive state. The two API models were provider-reported run-time identifiers \texttt{gpt-5.4-mini} and \texttt{qwen3-max}. Each model generated 120 rows per condition, for 720 rows per model and 1,440 rows total. Prompts requested a compact JSON object with \texttt{final\_action} and \texttt{rationale}. Provider metadata retained remote-call status, prompt tokens, completion tokens, total tokens, latency, temperature, top-p and parse/error status; API credentials were read from a private local file or environment variable and were not written to outputs.
+
+The only-decisive-field condition exposed a single current-event causal field, for example a reason field selecting the action, a corrected-memory field, a persistent-state field or a veto/constraint field. The action-prior-only condition exposed only a final-action prior sampled from a distribution-matched marginal schedule and no event-specific decisive state. The scrambled-field condition exposed a decisive field sampled from a different event with a different expected action, preserving field-like content while breaking the event-specific binding. Accuracy was the match between the canonicalized final action and the current event's expected action. Because the only-decisive prompt intentionally exposes an action-relevant field, this block is reported as a decisive-field positive control and wrapper sanity check rather than as an answer-hidden reasoning test.
+
+The local wrapper was evaluated post-generation on the same records. It accepted a generated action if the visible decisive field belonged to the current event and matched the action; otherwise it corrected the action to the current visible decisive field. When the visible decisive field came from a different event, the wrapper deferred instead of accepting that field. For conditions without a decisive field, the wrapper made no change. This wrapper is a deterministic finite-action guard with no additional model call; it is reported as a constructive intervention within the finite-action protocol, not as deployed-agent validation.
+
+\subsection{SWE-bench Lite issue-to-file validation}
+
+The SWE-bench Lite predictive-validity validation used \texttt{princeton-nlp/SWE-bench\_Lite}, split \texttt{test}, and retained all 300 issue records. The endpoint was issue-to-file localization; repository execution was outside the primary validation. Six provider-served model identifiers were evaluated: \texttt{gpt-3.5-turbo}, \texttt{gpt-4o-mini}, \texttt{qwen-turbo}, \texttt{qwen-plus-latest}, \texttt{deepseek-chat} and \texttt{gemini-2.5-flash-lite}. Provider, exact runtime identifier, access date and fallback status for these models and the other API validation slices are reported in Table~\ref{tab:api_model_metadata}. For each model--issue pair, the task-only condition used one low-temperature call plus two self-consistency calls; diagnostic conditions exposed current-state, decisive-only, scrambled-state, prior-only/no-state and irrelevant-cue fields. The predictor was oracle-free: model-visible decisive state used issue text, repository-visible file trees, fixed retrieval candidates and prompt-visible localization state. Benchmark reference implementation files were withheld from prompts and used only by the scorer.
+
+\begin{table}[!htbp]
+\centering
+\caption{Provider-served model metadata. Provider names denote the model-provider family; requests were routed through the configured OpenAI-compatible endpoint recorded in each run manifest.}
+\label{tab:api_model_metadata}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.16\textwidth}p{0.17\textwidth}p{0.24\textwidth}p{0.11\textwidth}p{0.24\textwidth}}
+\toprule
+API slice & Provider family & Exact runtime identifier & Access date & Fallback status \\
+\midrule
+Cross-model subset & OpenAI & \texttt{gpt-5.4-mini} & 2026-05-08 & fallback field recorded; no unrecovered generation \\
+Cross-model subset & OpenAI & \texttt{gpt-4.1-mini} & 2026-05-08 & fallback field recorded; no unrecovered generation \\
+Cross-model subset & DeepSeek & \texttt{deepseek-chat} & 2026-05-08 & fallback field recorded; no unrecovered generation \\
+Cross-model subset & Google Gemini & \texttt{gemini-2.5-flash} & 2026-05-08 & two malformed-output records retained; not replaced \\
+Formal API validation & OpenAI & \texttt{gpt-5.4-mini} & 2026-05-10 & fallback disabled; \texttt{fallback\_used}=0 \\
+Formal API validation & Google Gemini & \texttt{gemini-3.1-flash-lite-}\allowbreak\texttt{preview} & 2026-05-10 & fallback disabled; \texttt{fallback\_used}=0 \\
+Formal API validation & DeepSeek & \texttt{deepseek-v3.2} & 2026-05-10 & fallback disabled; \texttt{fallback\_used}=0 \\
+Formal API validation & Alibaba/Qwen & \texttt{qwen3-max} & 2026-05-10 & fallback disabled; \texttt{fallback\_used}=0 \\
+Causal-field API & OpenAI & \texttt{gpt-5.4-mini} & 2026-05-28 & row-level \texttt{fallback\_used=false}; zero parse/transport errors \\
+Causal-field API & Alibaba/Qwen & \texttt{qwen3-max} & 2026-05-28 & row-level \texttt{fallback\_used=false}; zero parse/transport errors \\
+SWE-bench Lite & OpenAI & \texttt{gpt-3.5-turbo} & 2026-05-29 & smoke and full-run metadata show no fallback use \\
+SWE-bench Lite & OpenAI & \texttt{gpt-4o-mini} & 2026-05-29 & smoke and full-run metadata show no fallback use \\
+SWE-bench Lite & Alibaba/Qwen & \texttt{qwen-turbo} & 2026-05-29 & smoke and full-run metadata show no fallback use \\
+SWE-bench Lite & Alibaba/Qwen & \texttt{qwen-plus-latest} & 2026-05-29 & smoke and full-run metadata show no fallback use \\
+SWE-bench Lite & DeepSeek & \texttt{deepseek-chat} & 2026-05-29 & smoke and full-run metadata show no fallback use \\
+SWE-bench Lite & Google Gemini & \texttt{gemini-2.5-flash-lite} & 2026-05-29 & smoke and full-run metadata show no fallback use \\
+\bottomrule
+\end{tabular}% 
+}
+\end{table}
+
+The primary outcome was ordinary task-only implementation-file hit@3: at least one predicted implementation file from the raw task-only or self-consistency calls had to match a benchmark reference implementation file. Hard-constraint violations and constraint-clean hit@3 were analyzed as secondary outcomes. The prespecified primary test compared a full non-CSB baseline against the same baseline augmented with the causal state-binding diagnostic composite. The baseline included model identity, repository, retrieved-candidate count, issue length, action entropy, self-consistency vote margin, rationale length and verbal confidence. Gold-derived predictors were excluded from the baseline: reference implementation-file count, retriever first-gold rank and retriever recall-at-\(k\) were retained only for audit/scoring records and were not used as predictors. In the merged 300-record run, 18,000 condition/repeat rows were observed and aggregated to 1,800 model--issue records for the primary AUC analysis. The baseline AUC was 0.732 and the augmented AUC was 0.915, giving \(\Delta\)AUC 0.183 with issue-cluster bootstrap lower 95\% bound 0.095. The state-binding coefficient was positive, and leave-one-repository, leave-one-model and within-model sensitivities were positive in 12/12, 6/6 and 6/6 analyses, respectively. Secondary analyses reported task-only hard-constraint no-violation and task-only constraint-clean hit@3, while the binding-guard arm was retained as a secondary guardrail diagnostic. These results support issue-to-file localization prediction; issue-resolution claims require patch generation and successful test-suite execution.
+
+The retained SWE-bench Lite set contained 12 repository identifiers. Leave-one-repository sensitivity therefore reports 12 held-out repository folds. Within-repository sensitivity requires both positive and negative primary hit@3 outcomes inside the repository-specific slice; 9 repositories satisfied that condition.
+
+For the frozen 50-record execution slice, patch-prediction JSONL files were generated for all six models using oracle-free prompts with repository-visible source context. Two selected models were evaluated with the official SWE-bench harness, and a later patch-generation v3 pass applied a local \texttt{git apply --check} screen plus one oracle-free repair attempt before rerunning the official harness on applicable patches. These execution-slice analyses are reported in the Supplementary Information as exploratory scope checks separate from the primary localization endpoint.
+
+\subsection{Stochastic controls and entropy checks}
+
+Strong stochastic controls tested whether increased stochastic opportunity, lower-temperature attempts, a compute-control attempt from the original protocol or self-consistency sampling could recover the structured-control profile. The corresponding raw protocol identifiers are retained only in the Supplementary Information registry; the full run executed 15,490 model generations with zero unrecovered generations. The compute-control-attempt label is descriptive, not evidence that the strict token/compute criterion was satisfied. Entropy checks were computed over retained behavior rows using raw final-action strings, rule-canonical actions, term frequency-inverse document frequency (TF-IDF) character n-gram semantic clusters with cosine-similarity threshold 0.90, and coarse action families. The separation between raw strings, canonical actions and semantic clusters follows from the fact that stochastic decoding alters surface-form distributions through temperature, top-\(k\), top-\(p\) and related sampling choices, whereas semantic uncertainty need not track lexical variability one-for-one \citep{fan2018hierarchical,holtzman2020degeneration,kuhn2023semantic}. These checks are reported for experiments with retained behavior rows; the baseline matrix is interpreted using its predefined raw-action entropy. The entropy-calibration analysis was interpreted under a predefined closeness criterion of 0.15 across raw/canonical/semantic/action-family entropy gaps. The selected finite-action-code calibration candidate is recorded descriptively in the reproducibility tables. Because this criterion was not satisfied, the entropy analysis is treated as a check rather than an entropy-matched stochastic-control claim.
+
+The local strict matching audit was a separate forced-budget analysis designed for inspectability rather than scale. It used cached local Qwen2.5-1.5B-Instruct inference on CPU, a fixed tokenizer, prompt padding to exact tokenizer equality by event, and \(\texttt{min\_new\_tokens}=\texttt{max\_new\_tokens}=32\). The two conditions were \texttt{structured\_state}, which exposed the event-specific decisive field, and \texttt{entropy\_prior\_no\_state}, which exposed only a distribution-matched action prior and no event-specific decisive state. The gate required event-wise prompt-token equality, event-wise completion-token equality, total-token ratio within \([0.95,1.05]\), latency ratio within \([0.50,1.50]\) and canonical-action entropy gap \(\leq0.15\) bits. The run logged tokenizer counts, completion counts, total-token counts, latency and CPU memory traces; CUDA and GPU-memory logging were unavailable in the local environment because CUDA was not available. This audit is reported as a bounded local strict-matching result and does not retroactively convert the earlier formal entropy/token attempts into passed strict matches.
+
+\subsection{Open-weight and API finite-action validation controls}
+
+Open-weight validation used the same finite-action-code scoring rule across four open-weight model instances spanning two model families: Qwen2.5-7B-Instruct, Qwen2.5-14B-Instruct, Qwen2.5-32B-Instruct and Mistral-7B-Instruct-v0.3. Each model contributed 126,000 scored generations over three agent scaffolds, 20 task families, seven variants and three seeds. The three scaffolds were prompt-level implementations of the same finite-action ontology: a ReAct-style scaffold, a planner/executor scaffold and a memory-reflection scaffold. The 20 task families crossed reason, memory, veto, self-continuity, irrelevant-cue and adversarial-randomness probes with finite-action decision contexts. The seven variants were structured, stochastic full-context, stochastic no-fields, stochastic scrambled-context, distribution-matched offline/no-context, target lesion and strict target lesion where available.
+
+The no-fields control removes structured state fields while preserving the visible action ontology and surface task context. The no-context control is the family of controls that withhold the decisive intervention-carrying context from the model-visible action-selection query. The scrambled-context control pairs each action-selection query with intervention context sampled from a different event, preserving surface complexity while breaking the event-specific link between decisive context and hidden expected action. The distribution-matched offline/no-context control samples final actions from the structured variant's empirical action prior within each task family but does not observe the decisive intervention context. The strict target lesion removes the decisive intervention-carrying field while preserving non-decisive context and the action ontology. The entropy-prior no-field behavioral control is a calibrated no-field variant that exposes only surface context and a final-action prior selected from a calibration split; it is not interpreted as strict entropy matching unless the registered entropy-gap criterion is met.
+
+Prompt paraphrases tested whether equivalent prompt variants changed the direction of the structured-control result, with 11,400 model generations and zero unrecovered generations in the auxiliary perturbation block. Counterfactual probes perturbed reason, reason strength, memory, veto, self-continuity, irrelevant and adversarial-randomness cues; the expanded counterfactual-probe corpus retained 30,584 trace/behavior rows with zero unrecovered generations. Placebo components included synthetic and negative-control manipulations designed to reveal generic structured-control false positives and ran 9,960 model generations with zero unrecovered generations. The formal transform audit used deterministic prompt-paraphrase and counterfactual-flip transforms. Prompt paraphrases remained within the predefined tolerance. For counterfactual-flip transforms, text--label consistency screening retained candidate rows with visible label-context contradictions as transform-quality boundary rows; the consistency-passing transform regenerated the visible decisive context and hidden expected action together before the holdout evaluation.
+
+Cross-model subset replication used provider-reported run-time model identifiers \texttt{gpt-5.4-mini}, \texttt{gpt-4.1-mini}, \texttt{deepseek-chat} and \texttt{gemini-2.5-flash}; each model contributed 1,995 model generations, and the Gemini subset contained two malformed-output records while preserving the same dataset-level direction. The open-weight reference model used Qwen2.5-14B-Instruct in local inference, producing 10,500 local generations, eight parse diagnostics and parse-error rate 0.000762; the structured-control AFCI \(>\) high-stochasticity AFCI criterion was met in 7/7 datasets. A stricter Qwen2.5-32B target-lesion slice added 28,800 scored generations over \texttt{structured} and \texttt{target\_lesion\_strict}. Formal Qwen control-audit slices added token-prompt and entropy-token variants, tokenizer token counts, latency metadata and GPU memory metadata. The API validation slice used the same finite-action control definitions for provider-reported run-time identifiers \texttt{gpt-5.4-mini}, \texttt{gemini-3.1-flash-lite-preview}, \texttt{deepseek-v3.2} and \texttt{qwen3-max}; the exact request metadata and manifests retain the identifiers returned or accepted by the endpoint at run time, with provider and fallback metadata summarized in Table~\ref{tab:api_model_metadata}.
+
+\subsection{Blinded audit}
+
+Three annotators independently scored 1,200 full-overlap items under blinded conditions with respect to variant identity; agreement was summarized with pairwise Cohen's kappa \citep{cohen1960coefficient}. The dimensions included final-action reason consistency, memory respect, veto appropriateness, first-impulse veto change, post-hoc appearance, verbose-template behavior without control and inappropriate irrelevant-cue change. Core dimensions had 100\% valid scoring, no unscorable items and no violations of the blinding protocol. Mean pairwise Cohen's kappa across dimensions was 0.961, and the lowest non-constant dimension kappa was 0.860. The annotation exercise was limited to expert scoring of model outputs and did not collect personal data or involve intervention with human participants. Automated judge scoring is reported as an auxiliary consistency check.
+
+\subsection{Statistical inference}
+
+The primary inference hierarchy was dataset-level direction, dataset-cluster bootstrap and component-specific ablation contrasts. Mixed-effect fits were retained as auxiliary summaries when stable; singular, boundary or non-convergent fits were kept outside the primary inferential basis. The finite-action-code behavioral benchmark used one row per unique corpus, event, condition, variant and replicate after predefined deduplication and inclusion rules; the exact reproducibility key was \texttt{dataset/base\_event/condition/variant/replicate}. Because the main cluster count is seven corpus-level units, the Supplementary Information also reports exact sign tests, leave-one-dataset-out means, top-effect-removed means and minimum dataset contrasts for the primary evidence blocks. For the open-weight finite-action matrix, the unit was the model--scaffold--task-family control contrast; summaries report model-, scaffold- and task-family-cluster bootstrap intervals, leave-one-cluster-out sensitivity and top-effect-removed means. Formal control-audit criteria covered completeness, parse-error, entropy-gap, token/compute, behavioral, robustness and API-readiness checks; criteria that were not satisfied are reported as boundary conditions rather than retuned passes, and the consistency-passing counterfactual transform is reported separately from the transform-quality boundary rows.
+
+The primary statistical unit is the corpus-level dataset unit. This choice is conservative for an evaluation study in which many rows share prompt families, variant definitions and scoring rules. Directional dataset counts, dataset-cluster bootstrap intervals, sign tests and leave-one-dataset-out summaries are reported as complementary checks at the dataset-unit level, following concerns about significance testing and unit choice in natural language processing (NLP) evaluation \citep{dror2018hitchhiker}.
+
+For a metric \(m\), comparator \(q\), and dataset \(d\), the paired dataset effect was
+\begin{equation}
+\delta_d(q;m)=\bar{m}_{d,\mathrm{SC}}-\bar{m}_{d,q},
+\end{equation}
+with \(\mathrm{SC}\) replaced by \(\mathrm{SC\_full}\) for matched-interface AFCI where appropriate. The primary reported effect was the dataset-average contrast
+\begin{equation}
+\bar{\delta}(q;m)=\frac{1}{|\mathcal{D}|}\sum_{d\in\mathcal{D}}\delta_d(q;m).
+\end{equation}
+Cluster-bootstrap intervals were computed by resampling dataset identifiers with replacement and recomputing \(\bar{\delta}^{*(b)}(q;m)\) for bootstrap draw \(b\); the lower 95\% bound is the empirical 2.5th percentile of this bootstrap distribution \citep{efron1993bootstrap}. Auxiliary mixed-effect summaries followed the usual random-effects logic for nested or repeated observations \citep{laird1982random}, but the paper's interpretation is based on the dataset-direction and cluster-bootstrap criteria described above.
+\section*{Ethics and human-subjects statement}
+
+Human annotators contributed output-level quality-control labels. No personal, behavioral, health or intervention data were collected from annotators or any other individuals. The annotation was limited to expert scoring of model outputs under a fixed rubric and blinded variant identity. The empirical units for the experimental analyses were synthetic or license-clean prompts, public prompt/event scaffolds and language-model outputs. An institutional non-human-subjects determination is available.
+
+\section*{Data availability}
+
+All claim-supporting derived data, source-data files, run manifests, scorer definitions, prompt templates, sampled event lists, criterion summaries, blinded-audit materials, model and hardware manifests and redistributable trace/behavior records are provided in the public GitHub code and compact source-data release: \reviewarchiveurl{} (\reviewarchivestatus). The release contains figure source data, table CSV exports, compact result summaries, manifests, SHA-256 checksums, environment notes, minimal rebuild commands, a clean-rebuild audit and an excluded-materials statement. Third-party source files not licensed for redistribution, private credentials and local configuration secrets are not included; derived summaries from those sources are included when permitted.
+
+\section*{Code availability}
+
+Analysis code, configuration templates, scorer definitions, prompt templates, run manifests, validation scripts and figure-generation code are provided in the same public GitHub release named in Data availability. The release includes the core run scripts, implementation modules, figure-generation code and a clean-rebuild audit that regenerates the main validation figure and checks Supplementary Table 17 and SWE-bench claim-support summaries. Private provider credentials and local configuration secrets are excluded, following transparent evaluation, model-reporting and dataset-documentation practice \citep{liang2023helm,mitchell2019modelcards,gebru2021datasheets}.
+
+\section*{Funding}
+
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+
+During the preparation of this work the author used language-model tools for editorial assistance, consistency checks and local code navigation. After using these tools, the author reviewed and edited the content as needed and takes full responsibility for the content of the published article.
+
+\section*{CRediT authorship contribution statement}
+
+Xiao Jia: Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Writing - original draft, Writing - review and editing, Visualization.
+
+\section*{Declaration of competing interest}
+
+The author declares that he has no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Acknowledgements}
+
+The author thanks the maintainers of the public datasets and open methodological resources used in this study.
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{references}
+
+\end{document}
+

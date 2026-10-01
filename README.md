@@ -1,82 +1,29 @@
-﻿# Causal State Binding for Language Agents
-
-This repository contains the AI Open submission release for:
+# Causal State Binding
 
 **Causal State Binding: An Intervention-Based Evaluation Framework for Language Agents**
 
-The release is scoped to manuscript review and reuse. It contains the retained
-CSB/Free-will analysis code, non-secret configuration templates, compact
-evidence tables, figure source data, regenerated validation figures, manuscript
-source files, and final review PDFs.
+Data, code and manuscript for studying when an agent's recorded state contributes to its subsequent actions. The evidence connects controlled action responses, interventions after agents write memory and persistent goals, content and identifier separation, directional substitution, and an application to software-file localization.
 
-This is a dedicated CSB/Free-will repository. It is not the older mechanistic
-interpretability repository for a different project.
+## Read the paper
 
-## Repository Contents
+- [Main manuscript](manuscript/main_ai_open_author.pdf) — 36 pages, 9 figures.
+- [Supplementary Information](manuscript/supplementary_information_ai_open.pdf) — 77 pages, 14 figures.
+- [Editable LaTeX sources and figure data](manuscript/source.zip).
 
-- `src/freewill/`: retained CSB scoring, intervention, schema-control,
-  strict-matching, open-weight validation, and SWE-bench issue-to-file modules.
-- `scripts/run/`: retained launch, merge, audit, conservative-export, and
-  figure-rebuild scripts for the manuscript evidence blocks.
-- `configs/`: non-secret configuration templates only.
-- `manuscript/tables/`: full-precision CSV tables used by the AI Open version.
-- `manuscript/figures/source_data/`: source data for the updated validation and
-  reliability figures.
-- `manuscript/figures/main/`: regenerated Figure 5 files using the oracle-free
-  SWE-bench baseline and task-only hit@3 primary outcome.
-- `manuscript/figures/extended_data/`: SWE-bench reliability and threshold
-  displays.
-- `manuscript/tex/`: AI Open manuscript and supplementary LaTeX source plus
-  bibliography.
-- `manuscript/*.pdf`: compiled main manuscript and supplementary information for
-  reviewer convenience.
+## Data and code
 
-## Current AI Open Analysis State
+Download the [research materials (ZIP, approximately 23 MB)](https://github.com/JiaXiao-Peter/Causal-State-Binding/raw/refs/heads/main/research/CSB_research_materials_20261001.zip). This self-contained package contains protocols, cohort membership, task-level outcomes, frozen predictions and estimators, saved resampling results, analysis code, all 23 vector figures and their plotted data. Its 289 members have individual SHA-256 records. No account, API key or new model calls are needed to reproduce the packaged summaries.
 
-The SWE-bench Lite issue-to-file analysis uses 300 issue records, six API model
-identifiers, 18,000 condition/repeat rows, and 1,800 aggregated model--issue
-records. The primary outcome is ordinary task-only implementation-file hit@3,
-computed from raw task-only/self-consistency calls. Hard-constraint violation
-and constraint-clean hit@3 are reported as secondary outcomes.
+[Research material guide](research/README.md) · [Reproduction instructions](REPRODUCE.md) · [File checksums](CHECKSUMS.csv) · [Version manifest](release_manifest.json)
 
-Gold-derived predictors are excluded from the primary baseline. The retained
-baseline uses model identity, repository, retrieved-candidate count, issue
-length, action entropy, self-consistency vote margin, rationale length, and
-confidence. Adding the CSB diagnostic composite increases primary AUC from
-0.732 to 0.915, with Delta AUC 0.183 and an issue-cluster lower 95% bound of
-0.095.
+Development, previously observed reevaluation and independent evaluation retain their recorded roles. In particular, the independent localization cohort consists of 800 issues across four configurations, with 3,200 predictions frozen before scoring. The scripts preserve the registered comparisons, denominators and saved uncertainty intervals.
 
-The decisive-field condition is treated as a positive control and wrapper
-sanity check. It is not claimed as hidden-reasoning sufficiency.
+## Versions
 
-## Reproduction Scope
+The files linked above form the current version, dated 1 October 2026. The initial public materials are preserved under [history/initial_submission](history/initial_submission/README.md) and in the [original commit](https://github.com/JiaXiao-Peter/Causal-State-Binding/tree/5caa66082283b9b1e46eccf048782c1a6d50e569). Use the current paper and research package together.
 
-The repository supports reviewer-side inspection and lightweight rebuilds from
-released source data. It does not include private provider credentials,
-non-redistributable third-party source trees, local machine configuration, raw
-API traces, model caches, or unrelated older-project materials.
-Full model reruns require external model/provider access and may not exactly
-reproduce provider-served runtime behavior.
+## Citation and reuse
 
-Minimal checks:
+Please cite the manuscript and identify this repository version or its exact commit; [CITATION.cff](CITATION.cff) supplies repository citation metadata. No DOI is asserted here.
 
-```bash
-python -m py_compile src/freewill/real_task_predictive_validity.py
-python -m py_compile scripts/run/rebuild_swebench_v2_conservative_exports.py
-python -m py_compile scripts/run/rebuild_validation_figure5_conservative.py
-```
-
-Figure/source-data rebuild scripts assume the repository root as the working
-directory.
-
-## Data and Code Availability
-
-This GitHub repository can be cited as the public code and compact source-data
-release for the AI Open submission. A versioned DOI should be created from this repository before final submission if the journal requires a permanent archival identifier.
-
-## License
-
-Code is released under the MIT License. Figure source data, tables, and
-manuscript-adjacent research artifacts are released under CC BY 4.0 unless a
-journal or third-party dataset policy imposes a narrower condition.
-
+Original software is covered by the repository's [MIT license](LICENSE). Author-created figure data and tables retain the repository's CC BY 4.0 terms. Reused benchmark materials, library dependencies and attributed third-party helpers retain their source terms; the repository grants no additional rights to those materials.
