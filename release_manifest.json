@@ -7,18 +7,18 @@
   "files": [
     {
       "path": "manuscript/main_ai_open_author.pdf",
-      "bytes": 1310785,
-      "sha256": "dbc3575996b5727ba7ce22f7071fae368ac31b3589135440f7a592f6db61dc2d"
+      "bytes": 1311588,
+      "sha256": "aaeae7d5f8583ee307882b23baef305b89a5e767d02cb0584a355e9437179519"
     },
     {
       "path": "manuscript/supplementary_information_ai_open.pdf",
-      "bytes": 1652992,
-      "sha256": "8642f061ba28a28fab67813b1e13f648b5ce388d88e3d9c56bce8f80b505eae5"
+      "bytes": 1653096,
+      "sha256": "629ecca35472f7cb9e83dea6c2f2273772a53cd4355351f3020b6111b075a82c"
     },
     {
       "path": "manuscript/source.zip",
-      "bytes": 2824505,
-      "sha256": "6f1d799ac3aa44405ead2a8976db393b9b22e8d2049d9cfc14e973b62b5707bc"
+      "bytes": 2824682,
+      "sha256": "735d616cf7614ca3eb13cca17ecbda692e82e6fb209a41d115edd2d083322bd5"
     },
     {
       "path": "research/CSB_research_materials_20261001.zip",
@@ -28,5 +28,5 @@
   ],
   "data_scope": "Analysis-ready research materials; original scientific roles and registered comparisons retained.",
   "bibliography_correction": "Reflexion and AgentBench author metadata verified against primary records, 1 October 2026.",
-  "editorial_clarification": "Action descriptions clarified in Results; exact response codes retained in Methods; quantization terminology explained. Scientific results and figures unchanged."
+  "editorial_clarification": "Abstract and Introduction clarified; annotation participation described; intervention captions and rounded zero corrected. Original outcome labels, numerical analyses and figures remain unchanged."
 }
