@@ -7,18 +7,18 @@
   "files": [
     {
       "path": "manuscript/main_ai_open_author.pdf",
-      "bytes": 1315810,
-      "sha256": "e27fc04f371e66531efbb5ec8c9937e4caa63f2fe08fdcef80301521340a26e4"
+      "bytes": 1317934,
+      "sha256": "f45570eb829ebac8a60f478d76acc88854cb859b48506dc0a2f72868e15a388e"
     },
     {
       "path": "manuscript/supplementary_information_ai_open.pdf",
       "bytes": 1653217,
-      "sha256": "97476ccf08b5f3b6c8427398c34e1ef53c41f2f305d778bb68a889f517433324"
+      "sha256": "128826db7904436fbb20051782a34f6b2ba8ad21fff2568d1f12d223644dbbbc"
     },
     {
       "path": "manuscript/source.zip",
-      "bytes": 2825643,
-      "sha256": "b6011fd3b8bd06b0eb4c85cf004041dac4a303c6ef9c117d1d99d5ec9e6da592"
+      "bytes": 2825900,
+      "sha256": "84c4024133378a5be5919f8fb61e103df8dd0a6f6fdedaa56abd2dfe88a73c76"
     },
     {
       "path": "research/CSB_research_materials_20261001.zip",
@@ -28,5 +28,5 @@
   ],
   "data_scope": "Analysis-ready research materials; original scientific roles and registered comparisons retained.",
   "bibliography_correction": "Reflexion and AgentBench author metadata verified against primary records, 1 October 2026.",
-  "editorial_clarification": "Complete narrative and Methods organization revised; Discussion connects findings to memory utilization, directional interventions and uncertainty estimation. Original outcomes, analyses, equations and artwork remain unchanged."
+  "editorial_clarification": "Whole-text narrative and Methods organization revised, with literature-grounded Discussion. Main Methods specify the seven shared baseline features and their vote/confidence rules. Original outcomes, analyses, numbered equations and scientific artwork remain unchanged."
 }
