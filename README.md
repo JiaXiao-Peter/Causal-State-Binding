@@ -6,7 +6,7 @@ Data, code and manuscript for studying when an agent's recorded state contribute
 
 ## Read the paper
 
-- [Main manuscript](manuscript/main_ai_open_author.pdf) — 36 pages, 9 figures.
+- [Main manuscript](manuscript/main_ai_open_author.pdf) — 37 pages, 9 figures.
 - [Supplementary Information](manuscript/supplementary_information_ai_open.pdf) — 77 pages, 14 figures.
 - [Editable LaTeX sources and figure data](manuscript/source.zip).
 
@@ -20,7 +20,7 @@ Development, previously observed reevaluation and independent evaluation retain 
 
 ## Versions
 
-The files linked above form the current version, dated 1 October 2026. The initial public materials are preserved under [history/initial_submission](history/initial_submission/README.md) and in the [original commit](https://github.com/JiaXiao-Peter/Causal-State-Binding/tree/5caa66082283b9b1e46eccf048782c1a6d50e569). Use the current paper and research package together.
+The files linked above form the current version, dated 2 October 2026. The initial public materials are preserved under [history/initial_submission](history/initial_submission/README.md) and in the [original commit](https://github.com/JiaXiao-Peter/Causal-State-Binding/tree/5caa66082283b9b1e46eccf048782c1a6d50e569). Use the current paper and research package together.
 
 ## Citation and reuse
 
