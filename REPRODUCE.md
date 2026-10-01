@@ -14,10 +14,10 @@
 5. To rebuild all 23 figures, run:
 
    ```text
-   python maintenance/figures/build_R53_figures.py
+   python maintenance/figures/build_R60_figures.py
    ```
 
-   PDF, editable SVG, PNG and source-table outputs appear in `maintenance/qa/R53_semantic_palette/staging/current/`. The figure driver uses the preserved input files and plotting modules; earlier plotting entrypoints need not be run separately. Arial is preferred, with DejaVu Sans as a fallback. Font and library versions can affect rendering; the packaged vector PDFs give the manuscript appearance.
+   PDF, editable SVG, PNG and source-table outputs appear in `maintenance/qa/R60_figure_typography/staging/current/`. The figure driver uses the preserved input files and plotting modules; earlier plotting entrypoints need not be run separately. Arial is preferred, with DejaVu Sans as a fallback. Font and library versions can affect rendering; the packaged vector PDFs give the manuscript appearance.
 
 The saved-estimator files use the versions recorded with their freeze/environment metadata. Summary reproduction does not deserialize those estimators. The package README identifies the supported offline commands and the collection scripts that require their original execution environment.
 

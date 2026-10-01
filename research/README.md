@@ -11,6 +11,6 @@ The [versioned research package](https://github.com/JiaXiao-Peter/Causal-State-B
 | How well do diagnostic features predict localization success? | Development features and frozen estimators, cohort membership/exclusions, 3,200 independent frozen predictions, scores, saved paired draws, calibration and resource summaries. |
 | How are visible outputs assessed? | Anonymized individual annotation records, scoring summaries and agreement calculations. |
 
-`package_manifest.json` lists all 289 files and their individual hashes. The scientific records and executable code are the same observations and analysis inputs used in the paper. See [reproduction instructions](../REPRODUCE.md) and the extracted package's README for exact commands and paths.
+`package_manifest.json` records the hashes of all 290 payload files; the ZIP also contains the manifest itself. The scientific records and executable code are the same observations and analysis inputs used in the paper. See [reproduction instructions](../REPRODUCE.md) and the extracted package's README for exact commands and paths.
 
 The public package supports the reported analyses and figure reconstruction. Full provider-call archives, model weights and environment snapshots are separate from this compact analysis-ready distribution. Third-party benchmark records remain subject to their original terms.

@@ -12,7 +12,7 @@ Data, code and manuscript for studying when an agent's recorded state contribute
 
 ## Data and code
 
-Download the [research materials (ZIP, approximately 23 MB)](https://github.com/JiaXiao-Peter/Causal-State-Binding/raw/refs/heads/main/research/CSB_research_materials_20261001.zip). This self-contained package contains protocols, cohort membership, task-level outcomes, frozen predictions and estimators, saved resampling results, analysis code, all 23 vector figures and their plotted data. Its 289 members have individual SHA-256 records. No account, API key or new model calls are needed to reproduce the packaged summaries.
+Download the [research materials (ZIP, approximately 23 MB)](https://github.com/JiaXiao-Peter/Causal-State-Binding/raw/refs/heads/main/research/CSB_research_materials_20261001.zip). This self-contained package contains protocols, cohort membership, task-level outcomes, frozen predictions and estimators, saved resampling results, analysis code, all 23 vector figures and their plotted data. It contains 290 archive members, including a manifest with per-file SHA-256 records. No account, API key or new model calls are needed to reproduce the packaged summaries.
 
 [Research material guide](research/README.md) · [Reproduction instructions](REPRODUCE.md) · [File checksums](CHECKSUMS.csv) · [Version manifest](release_manifest.json)
 
