@@ -3,22 +3,22 @@
   "paper": "Causal State Binding: An Intervention-Based Evaluation Framework for Language Agents",
   "repository": "https://github.com/JiaXiao-Peter/Causal-State-Binding",
   "research_package_members": 290,
-  "prior_public_commit": "808d4b7c72d77f467eef3980e07597d95b457755",
+  "prior_public_commit": "9e948ab5872afae32d01e32afa12df4012b90fd8",
   "files": [
     {
       "path": "manuscript/main_ai_open_author.pdf",
-      "bytes": 1316862,
-      "sha256": "45bd1e6c628613e80e76ab7901f616cc3f8e90bf8ce19ca33930485864e48de8"
+      "bytes": 1316692,
+      "sha256": "dfd611fafec52522f88dc0aff2da357c9b05ee9c9b3d553cab2d017a17b6908d"
     },
     {
       "path": "manuscript/supplementary_information_ai_open.pdf",
-      "bytes": 1653497,
-      "sha256": "60efcc1f80c80c05f98a5895f6d875fcf10f8ae90022500a1947ad715a05dce0"
+      "bytes": 1653036,
+      "sha256": "23e1b3bf02ddbc06c486b7e3a201807463eb9a0483e4d0199d494fdc03b8166a"
     },
     {
       "path": "manuscript/source.zip",
-      "bytes": 2825214,
-      "sha256": "82553a1f30c56c6eec76ff5618a40d5c182f90a16a10a96be359685ad3e32622"
+      "bytes": 2824949,
+      "sha256": "43552ee86df57b206c9e7a50414b8338109d62ca375899291795d32be687f4c4"
     },
     {
       "path": "research/CSB_research_materials_20261001.zip",
@@ -28,6 +28,6 @@
   ],
   "data_scope": "Analysis-ready research materials; original scientific roles and registered comparisons retained.",
   "bibliography_correction": "Reflexion and AgentBench author metadata verified against primary records, 1 October 2026.",
-  "editorial_clarification": "Results are expressed as observed estimates and uncertainty intervals. The abstract retains the prespecified multiplicity-adjusted interval; all statistical criteria, scientific results, methods and artwork are unchanged.",
+  "editorial_clarification": "The narrative connects state deletion, recovery and content-directed action, followed by localization reliability as an application. Statistical roles, all observed results, methods and artwork are unchanged; primary comparison intervals remain explicit.",
   "figure_refinement": "Consistent final-size visible strokes of at least 1 pt and moderately larger text across all 23 active figures. Data, estimates, source tables and scientific conclusions are unchanged."
 }
